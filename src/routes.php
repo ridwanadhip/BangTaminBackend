@@ -94,12 +94,14 @@ $app->post('/', function (Request $req, Response $res, array $args) {
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
                 if ($stateCode == '0') {
-                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                        GuzzleHttp\RequestOptions::JSON => [
-                            'id' => $state[0]['id'],
-                            'state' => '2',
-                        ],
-                    ]);
+                    // $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                    //     GuzzleHttp\RequestOptions::JSON => [
+                    //         'id' => $state[0]['id'],
+                    //         'state' => '2',
+                    //     ],
+                    // ]);
+
+                    $changeJson = changeState('2');
 
                     $multi = new MultiMessageBuilder();
                     $multi
@@ -113,24 +115,20 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     //     newHomeCarousel()
                     // );
                 } else if ($stateCode == '1') {
-                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                        GuzzleHttp\RequestOptions::JSON => [
-                            'id' => $state[0]['id'],
-                            'state' => '2',
-                        ],
-                    ]);
+                    // $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                    //     GuzzleHttp\RequestOptions::JSON => [
+                    //         'id' => $state[0]['id'],
+                    //         'state' => '2',
+                    //     ],
+                    // ]);
+
+                    $changeJson = changeState('2');
 
                     $multi = new MultiMessageBuilder();
                     $multi
                         ->add(new TextMessageBuilder('Apa yang bisa abang bantu?'))
                         ->add(newHomeCarousel());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
-
-                    // $response = $bot->replyText($event->getReplyToken(), 'Apa yang bisa abang bantu?');
-                    // $response = $bot->replyMessage(
-                    //     $event->getReplyToken(), 
-                    //     newHomeCarousel()
-                    // );
                 }
             }
         } else if ($event instanceof PostbackEvent) {
@@ -138,6 +136,18 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
             if ($stateCode == '2') {
                 $value = $event->getPostbackData();
+
+                if ($value == '1') {
+
+                } else if ($value == '2') {
+                    
+                } else if ($value == '3') {
+                    
+                } else if ($value == '4') {
+                    
+                } else if ($value == '5') {
+                    
+                }
             }
         }
     }
@@ -145,6 +155,15 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     $res->write('OK');
     return $res;
 });
+
+function changeState($code) {
+    return $client->request('PUT', SERVICE_URL.'/bot-states', [
+        GuzzleHttp\RequestOptions::JSON => [
+            'id' => $state[0]['id'],
+            'state' => $code,
+        ],
+    ]);
+}
 
 function newHomeCarousel() {
     return new TemplateMessageBuilder(
