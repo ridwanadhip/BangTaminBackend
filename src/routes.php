@@ -98,6 +98,11 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             'state' => '1',
                         ],
                     ]);
+
+                    $response = $bot->replyMessage(
+                        $event->getReplyToken(), 
+                        newHomeCarousel()
+                    );
                 } else if ($stateCode == '1') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
