@@ -54,9 +54,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     $bot = $this->bot;
     $logger = $this->logger;
 
-    // error_log($req->getHeader());
-    // error_log($req->getBody()->getContents());
-
     $signature = $req->getHeader(HTTPHeader::LINE_SIGNATURE);
     if (empty($signature)) {
         return $res->withStatus(400, 'Bad Request');
@@ -76,6 +73,9 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $client = new GuzzleHttp\Client();
                 $result = $client->request('GET', SERVICE_URL.'/products', ['auth' => ['user', 'pass']]);
                 $decodedResults = json_decode($result->getBody()->getContents(), true);
+
+                error_log($event->getText());
+                error_log($event->getUserId());
 
                 // Example of text
                 $replyText = $event->getText();
@@ -124,6 +124,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 // );
             }
         }
+
         continue;
     }
 
