@@ -62,7 +62,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                 $decodedResults = json_decode($result->getBody()->getContents());
                 $products = [];
-                error_log($decodedResults);
 
                 foreach ($decodedResults as $item) {
                     array_push(
@@ -72,6 +71,8 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             new UriTemplateActionBuilder("test", $item['image'])
                         )
                     );
+
+                    error_log($item['image']);
                 }
 
                 // $response = $bot->replyText($event->getReplyToken(), $replyText);
