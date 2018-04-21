@@ -74,6 +74,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $products = [];
 
                 foreach ($decodedResults as $item) {
+                    error_log($item['image']);
                     array_push(
                         $products, 
                         new ImageCarouselColumnTemplateBuilder(
