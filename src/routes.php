@@ -69,31 +69,28 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     }
 
     foreach ($events as $event) {
+        $userId = $event->getUserId();
+        $client = new GuzzleHttp\Client();
+        $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
+        $state = json_decode($stateJson->getBody()->getContents(), true);
+
+        $stateCode = '0';
+        if (count($state) > 0) {
+            $stateCode = $state[0]['state'];
+        } else {
+            $createJson = $client->request('POST', SERVICE_URL.'/bot-states', [
+                GuzzleHttp\RequestOptions::JSON => [
+                    'userId' => $userId,
+                    'state' => '0',
+                ],
+            ]);
+
+            $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
+            $state = json_decode($stateJson->getBody()->getContents(), true);
+        }
+
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
-                $userId = $event->getUserId();
-                $client = new GuzzleHttp\Client();
-                $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
-                // TODO: handle error
-                $state = json_decode($stateJson->getBody()->getContents(), true);
-
-                $stateCode = '0';
-                if (count($state) > 0) {
-                    $stateCode = $state[0]['state'];
-                } else {
-                    $createJson = $client->request('POST', SERVICE_URL.'/bot-states', [
-                        GuzzleHttp\RequestOptions::JSON => [
-                            'userId' => $userId,
-                            'state' => '0',
-                        ],
-                    ]);
-
-                    $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
-                    $state = json_decode($stateJson->getBody()->getContents(), true);
-
-                    // TODO: handle error
-                }
-                
                 if ($stateCode == '0' || $stateCode == '1') {
                     if ($stateCode == '0') {
                         $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
@@ -113,51 +110,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     $response = $bot->replyMessage(
                         $event->getReplyToken(), 
-                        new TemplateMessageBuilder(
-                            'alt test', 
-                            new CarouselTemplateBuilder([
-                                new CarouselColumnTemplateBuilder(
-                                    null,
-                                    'Info SPBU',
-                                    'https://www.example.com/test.jpg', 
-                                    [
-                                        new PostbackTemplateActionBuilder('Detail', 'post=1'),
-                                    ]
-                                ),
-                                new CarouselColumnTemplateBuilder(
-                                    null,
-                                    'Shop',
-                                    'https://www.example.com/test.jpg', 
-                                    [
-                                        new PostbackTemplateActionBuilder('Detail', 'post=2'),
-                                    ]
-                                ),
-                                new CarouselColumnTemplateBuilder(
-                                    null,
-                                    'Promo',
-                                    'https://www.example.com/test.jpg', 
-                                    [
-                                        new PostbackTemplateActionBuilder('Detail', 'post=3'),
-                                    ]
-                                ),
-                                new CarouselColumnTemplateBuilder(
-                                    null,
-                                    'My Account',
-                                    'https://www.example.com/test.jpg', 
-                                    [
-                                        new PostbackTemplateActionBuilder('Detail', 'post=4'),
-                                    ]
-                                ),
-                                new CarouselColumnTemplateBuilder(
-                                    null,
-                                    'Costumer Account',
-                                    'https://www.example.com/test.jpg', 
-                                    [
-                                        new PostbackTemplateActionBuilder('Detail', 'post=5'),
-                                    ]
-                                ),
-                            ])
-                        )
+                        newHomeCarousel()
                     );
 
                     continue;
@@ -169,3 +122,51 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     $res->write('OK');
     return $res;
 });
+
+function newHomeCarousel() {
+    return new TemplateMessageBuilder(
+        'alt test', 
+        new CarouselTemplateBuilder([
+            new CarouselColumnTemplateBuilder(
+                null,
+                'Info SPBU',
+                'https://www.example.com/test.jpg', 
+                [
+                    new PostbackTemplateActionBuilder('Detail', 'post=1'),
+                ]
+            ),
+            new CarouselColumnTemplateBuilder(
+                null,
+                'Shop',
+                'https://www.example.com/test.jpg', 
+                [
+                    new PostbackTemplateActionBuilder('Detail', 'post=2'),
+                ]
+            ),
+            new CarouselColumnTemplateBuilder(
+                null,
+                'Promo',
+                'https://www.example.com/test.jpg', 
+                [
+                    new PostbackTemplateActionBuilder('Detail', 'post=3'),
+                ]
+            ),
+            new CarouselColumnTemplateBuilder(
+                null,
+                'My Account',
+                'https://www.example.com/test.jpg', 
+                [
+                    new PostbackTemplateActionBuilder('Detail', 'post=4'),
+                ]
+            ),
+            new CarouselColumnTemplateBuilder(
+                null,
+                'Costumer Account',
+                'https://www.example.com/test.jpg', 
+                [
+                    new PostbackTemplateActionBuilder('Detail', 'post=5'),
+                ]
+            ),
+        ])
+    );
+}
