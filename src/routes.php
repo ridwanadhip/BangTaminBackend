@@ -127,23 +127,40 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                 $userId = $event->getUserId();
                 $client = new GuzzleHttp\Client();
-
                 $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
+                // TODO: handle error
                 $state = json_decode($stateJson->getBody()->getContents(), true);
 
                 $stateCode = '0';
-                if (count($state) == 0) {
+                if (count($state) > 0) {
+                    $stateCode = $state[0]['state'];
+                } else {
                     $createStateResponse = $client->request('POST', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'userId' => $userId,
                             'state' => '0',
                         ],
                     ]);
-                } else {
-                    $stateCode = $state[0]['state'];
+
+                    // TODO: handle error
                 }
 
-                error_log($stateCode);
+                if ($stateCode == '0') {
+                    $stateJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => '1',
+                        ],
+                    ]);
+
+                    // TODO: handle error
+                    $reply  = 'Selamat datang\n';
+                    $reply .= 'Pilih salah satu menu berikut:\n';
+                    $reply .= '1. ya\n';
+                    $reply .= '2. tidak\n';
+                    $response = $bot->replyText($event->getReplyToken(), $reply);
+                    continue;
+                }
             }
         }
 
