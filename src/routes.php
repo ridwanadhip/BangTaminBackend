@@ -159,8 +159,17 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $replyText = "Dimana lokasi SPBU yang ingin kamu ketahui?";
                     $response = $bot->replyText($event->getReplyToken(), $replyText);
                 } else if ($value == 'shopMenu') {
-                    $replyText = "menu 2";
-                    $response = $bot->replyText($event->getReplyToken(), $replyText);
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'promptProductType',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(newProductButtons());;
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($value == 'promoMenu') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
@@ -171,7 +180,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     $promotionsJson = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
                     $decodedResults = json_decode($promotionsJson->getBody()->getContents(), true);
-
                     $promotions = [];
                     foreach ($decodedResults as $item) {
                         array_push(
@@ -186,19 +194,13 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             )
                         );
                     }
+
                     $multi = new MultiMessageBuilder();
                     $multi
                         ->add(new TextMessageBuilder('Okee, Bang Tamin punya promo nih buat kamu!'))
                         ->add(new TemplateMessageBuilder('promo test', new CarouselTemplateBuilder($promotions)))
                         ->add(newDecisionButtons());;
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
-
-                    // $multi = new MultiMessageBuilder();
-                    // $multi
-                    //     ->add(new TextMessageBuilder('Okee, Bang Tamin punya promo nih buat kamu!'))
-                    //     ->add(newPromoCarousel())
-                    //     ->add(newDecisionButtons());;
-                    // $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($value == 'accountMenu') {
                     $replyText = "menu 4";
                     $response = $bot->replyText($event->getReplyToken(), $replyText);
@@ -257,6 +259,23 @@ function newDecisionButtons() {
     );
 }
 
+function newProductButtons() {
+    return new TemplateMessageBuilder(
+        'product test',
+        new ButtonTemplateBuilder(
+            null,
+            'Produk apa yang ingin kamu beli?',
+            null,
+            [
+                new PostbackTemplateActionBuilder('Bright Gas', 'productGas'),
+                new PostbackTemplateActionBuilder('Food & Drink', 'productFood'),
+                new PostbackTemplateActionBuilder('Oil', 'productOil'),
+                new PostbackTemplateActionBuilder('Others', 'productOther'),
+            ]
+        )
+    );
+}
+
 function newHomeCarousel() {
     return new TemplateMessageBuilder(
         'alt test', 
@@ -305,34 +324,34 @@ function newHomeCarousel() {
     );
 }
 
-function newPromoCarousel() {
-    return new TemplateMessageBuilder(
-        'promo test', 
-        new CarouselTemplateBuilder([
-            new CarouselColumnTemplateBuilder(
-                null,
-                'Promo Kartini Bright Gas',
-                'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293288/promo_kartini_bright_gas.jpg', 
-                [
-                    new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
-                ]
-            ),
-            new CarouselColumnTemplateBuilder(
-                null,
-                'Promo Pertamina Turbo',
-                'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293400/pertamax_turbo_15082017.jpg', 
-                [
-                    new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
-                ]
-            ),
-            new CarouselColumnTemplateBuilder(
-                null,
-                'Promo Pertamina Retail',
-                'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293417/promo_pertamina_retail.png', 
-                [
-                    new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
-                ]
-            )
-        ])
-    );
-}
+// function newPromoCarousel() {
+//     return new TemplateMessageBuilder(
+//         'promo test', 
+//         new CarouselTemplateBuilder([
+//             new CarouselColumnTemplateBuilder(
+//                 null,
+//                 'Promo Kartini Bright Gas',
+//                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293288/promo_kartini_bright_gas.jpg', 
+//                 [
+//                     new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
+//                 ]
+//             ),
+//             new CarouselColumnTemplateBuilder(
+//                 null,
+//                 'Promo Pertamina Turbo',
+//                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293400/pertamax_turbo_15082017.jpg', 
+//                 [
+//                     new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
+//                 ]
+//             ),
+//             new CarouselColumnTemplateBuilder(
+//                 null,
+//                 'Promo Pertamina Retail',
+//                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293417/promo_pertamina_retail.png', 
+//                 [
+//                     new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
+//                 ]
+//             )
+//         ])
+//     );
+// }
