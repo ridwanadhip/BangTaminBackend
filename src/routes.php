@@ -9,11 +9,16 @@ use LINE\LINEBot\Event\MessageEvent\TextMessage;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
 
-$app->get('/', function (Request $request, Response $response, array $args) {
-    // Sample log message
-    $this->logger->info("Slim-Skeleton '/' route");
+const SERVICE_URL = 'https://bang-tamin.herokuapp.com';
 
+$app->get('/', function (Request $request, Response $response, array $args) {
+    // $client = new GuzzleHttp\Client();
+    // $res = $client->request('GET', SERVICE_URL."/products", [
+    //     'auth' => ['user', 'pass']
+    // ]);
+    // $res->getBody();
     // Render index view
+    $this->logger->info("Slim-Skeleton '/' route");
     return $this->renderer->render($response, 'index.phtml', $args);
 });
 
