@@ -77,12 +77,9 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $result = $client->request('GET', SERVICE_URL.'/products', ['auth' => ['user', 'pass']]);
                 $decodedResults = json_decode($result->getBody()->getContents(), true);
 
-                $replyText = $bot->getProfile();
+                // Example of text
+                $replyText = $event->getText();
                 $response = $bot->replyText($event->getReplyToken(), $replyText);
-
-                // // Example of text
-                // $replyText = $event->getText();
-                // $response = $bot->replyText($event->getReplyToken(), $replyText);
 
                 // // Example of carousel
                 // $products = [];
