@@ -68,7 +68,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         $products, 
                         new ImageCarouselColumnTemplateBuilder(
                             $item['image'], 
-                            new UriTemplateActionBuilder("test", t)
+                            new UriTemplateActionBuilder("test", $item['image'])
                         )
                     );
                 }
