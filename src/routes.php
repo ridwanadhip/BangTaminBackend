@@ -144,6 +144,9 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     $promotions = [];
                     foreach ($decodedResults as $item) {
+                        error_log($item['title']);
+                        error_log($item['desc']);
+                        error_log($item['image']);
                         array_push(
                             $promotions, 
                             new CarouselColumnTemplateBuilder(
