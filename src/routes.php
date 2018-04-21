@@ -169,40 +169,40 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             'alt test', 
                             new CarouselTemplateBuilder([
                                 new CarouselColumnTemplateBuilder(
+                                    null,
                                     'Info SPBU',
-                                    null,
                                     'https://www.example.com/test.jpg', 
                                     [
                                         new UriTemplateActionBuilder('link', 'https://www.example.com')
                                     ]
                                 ),
                                 new CarouselColumnTemplateBuilder(
+                                    null,
                                     'Shop',
-                                    null,
                                     'https://www.example.com/test.jpg', 
                                     [
                                         new UriTemplateActionBuilder('link', 'https://www.example.com')
                                     ]
                                 ),
                                 new CarouselColumnTemplateBuilder(
+                                    null,
                                     'Promo',
-                                    null,
                                     'https://www.example.com/test.jpg', 
                                     [
                                         new UriTemplateActionBuilder('link', 'https://www.example.com')
                                     ]
                                 ),
                                 new CarouselColumnTemplateBuilder(
+                                    null,
                                     'My Account',
-                                    null,
                                     'https://www.example.com/test.jpg', 
                                     [
                                         new UriTemplateActionBuilder('link', 'https://www.example.com')
                                     ]
                                 ),
                                 new CarouselColumnTemplateBuilder(
-                                    'Costumer Account',
                                     null,
+                                    'Costumer Account',
                                     'https://www.example.com/test.jpg', 
                                     [
                                         new UriTemplateActionBuilder('link', 'https://www.example.com')
