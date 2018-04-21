@@ -8,6 +8,8 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuild
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\MultiMessageBuilder;
+use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
@@ -112,11 +114,17 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
-                    $response = $bot->replyText($event->getReplyToken(), 'Apa yang bisa abang bantu?');
-                    $response = $bot->replyMessage(
-                        $event->getReplyToken(), 
-                        newHomeCarousel()
-                    );
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Apa yang bisa abang bantu?'))
+                        ->add(newHomeCarousel());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+
+                    // $response = $bot->replyText($event->getReplyToken(), 'Apa yang bisa abang bantu?');
+                    // $response = $bot->replyMessage(
+                    //     $event->getReplyToken(), 
+                    //     newHomeCarousel()
+                    // );
                 }
             }
         } else if ($event instanceof PostbackEvent) {
