@@ -125,6 +125,11 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 //     )
                 // );
 
+                // // Example of multiline
+                // $reply = "Selamat datang\n" . 
+                //     "Pilih salah satu menu berikut:\n";
+                // $response = $bot->replyText($event->getReplyToken(), $reply);
+
                 $userId = $event->getUserId();
                 $client = new GuzzleHttp\Client();
                 $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
@@ -154,10 +159,23 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     ]);
 
                     // TODO: handle error
-                    $reply = 
-                        "Selamat datang\n" . 
-                        "Pilih salah satu menu berikut:\n";
-                    $response = $bot->replyText($event->getReplyToken(), $reply);
+                    // Example of button
+                    $response = $bot->replyMessage(
+                        $event->getReplyToken(),
+                        new TemplateMessageBuilder(
+                            'alt test',
+                            new ButtonTemplateBuilder(
+                                null,
+                                'Kamu harus terdaftar sebagai member atau login terlebih dahulu',
+                                null,
+                                [
+                                    new PostbackTemplateActionBuilder('Daftar', 'value=1'),
+                                    new PostbackTemplateActionBuilder('Login', 'value=2'),
+                                    new PostbackTemplateActionBuilder('Menu Utama', 'value=3'),
+                                ]
+                            )
+                        )
+                    );
                     continue;
                 }
             }
