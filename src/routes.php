@@ -94,14 +94,14 @@ $app->post('/', function (Request $req, Response $res, array $args) {
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
                 if ($code == '0') {
-                    changeState('1');
+                    changeState($id, '1');
 
                     $response = $bot->replyMessage(
                         $event->getReplyToken(), 
                         newHomeCarousel()
                     );
                 } else if ($code == '1') {
-                    changeState('2');
+                    changeState($id, '2');
 
                     $response = $bot->replyMessage(
                         $event->getReplyToken(), 
