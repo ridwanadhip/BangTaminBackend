@@ -70,16 +70,18 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     foreach ($events as $event) {
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
-                $client = new GuzzleHttp\Client();
-                $result = $client->request('GET', SERVICE_URL.'/products', ['auth' => ['user', 'pass']]);
-                $decodedResults = json_decode($result->getBody()->getContents(), true);
+                // // get request from backend
+                // $client = new GuzzleHttp\Client();
+                // $result = $client->request('GET', SERVICE_URL.'/products', ['auth' => ['user', 'pass']]);
+                // $decodedResults = json_decode($result->getBody()->getContents(), true);
 
-                error_log($event->getText());
-                error_log($event->getUserId());
+                // // Error log to heroku
+                // error_log($event->getText());
+                // error_log($event->getUserId());
 
-                // Example of text
-                $replyText = $event->getText();
-                $response = $bot->replyText($event->getReplyToken(), $replyText);
+                // // Example of text
+                // $replyText = $event->getText();
+                // $response = $bot->replyText($event->getReplyToken(), $replyText);
 
                 // // Example of carousel
                 // $products = [];
@@ -122,6 +124,12 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 //         )
                 //     )
                 // );
+
+                $userId = $event->getUserId();
+                $client = new GuzzleHttp\Client();
+                $result = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
+                $replyText = $result->getBody()->getContents();
+                $response = $bot->replyText($event->getReplyToken(), $replyText);
             }
         }
 
