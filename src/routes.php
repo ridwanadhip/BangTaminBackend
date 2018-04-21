@@ -122,17 +122,15 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 }
             }
         } else if ($event instanceof PostbackEvent) {
-            error_log($event->getPostbackData());
-            error_log($stateCode);
-
             if ($stateCode == '2') {
                 $value = $event->getPostbackData();
-                
-                if ($value == '1') {
 
+                if ($value == '1') {
+                    error_log("branch 1");
                 } else if ($value == '2') {
-                    
+                    error_log("branch 2");
                 } else if ($value == '3') {
+                    error_log("branch 3");
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
@@ -166,9 +164,9 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         )
                     );
                 } else if ($value == '4') {
-                    
+                    error_log("branch 4");
                 } else if ($value == '5') {
-                    
+                    error_log("branch 5");
                 }
             }
         }
