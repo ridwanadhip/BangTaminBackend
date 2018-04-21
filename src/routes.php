@@ -6,6 +6,7 @@ use LINE\LINEBot;
 use LINE\LINEBot\Constant\HTTPHeader;
 use LINE\LINEBot\Event\MessageEvent;
 use LINE\LINEBot\Event\MessageEvent\TextMessage;
+use LINE\LINEBot\Event\JoinEvent;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
 
@@ -40,20 +41,18 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     }
 
     foreach ($events as $event) {
-        if (!($event instanceof MessageEvent)) {
-            $logger->info('Non message event has come');
-            continue;
+        if ($event instanceof MessageEvent) {
+            if ($event instanceof TextMessage) {
+                $replyText = $event->getText();
+                $response = $bot->replyText($event->getReplyToken(), $replyText);
+            }
+        } else if ($event instanceof JoinEvent) {
+            $response = $bot->replyText($event->getReplyToken(), "Selamat Datang!");
         }
 
-        if (!($event instanceof TextMessage)) {
-            $logger->info('Non text message has come');
-            continue;
-        }
-
-        $replyText = $event->getText();
-        $resp = $bot->replyText($event->getReplyToken(), $replyText);
-        $logger->info('Reply text: ' . $replyText);
-        $logger->info($resp->getHTTPStatus() . ': ' . $resp->getRawBody());
+        // $logger->info('Reply text: ' . $replyText);
+        // $logger->info($response->getHTTPStatus() . ': ' . $response->getRawBody());
+        continue;
     }
 
     $res->write('OK');
