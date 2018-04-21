@@ -9,14 +9,6 @@ use LINE\LINEBot\Event\MessageEvent\TextMessage;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
 
-// Routes
-$settings = require __DIR__ . '/../src/settings.php';
-$app = new \Slim\App($settings);
-
-function getBot(): LINEBot {
-    return $app->bot;
-}
-
 $app->get('/', function (Request $request, Response $response, array $args) {
     // Sample log message
     $this->logger->info("Slim-Skeleton '/' route");
@@ -26,7 +18,7 @@ $app->get('/', function (Request $request, Response $response, array $args) {
 });
 
 $app->post('/', function (Request $req, Response $res, array $args) {
-    $bot = getBot();
+    $bot = $this->bot;
     $logger = $this->logger;
 
     $signature = $req->getHeader(HTTPHeader::LINE_SIGNATURE);
