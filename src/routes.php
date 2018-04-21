@@ -58,14 +58,13 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     foreach ($events as $event) {
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
-                $response = $bot->replyText($event->getReplyToken(), $replyText);
-
                 $client = new GuzzleHttp\Client();
                 $result = $client->request('GET', SERVICE_URL."/products", [
                     'auth' => ['user', 'pass']
                 ]);
 
                 $replyText = $result->getBody();
+                $response = $bot->replyText($event->getReplyToken(), $replyText);
             }
         }
         continue;
