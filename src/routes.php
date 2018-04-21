@@ -78,47 +78,47 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $decodedResults = json_decode($result->getBody()->getContents(), true);
                 $products = [];
 
-                foreach ($decodedResults as $item) {
-                    $httpsImage = str_replace('http://', 'https://', $item['image']);
+                // foreach ($decodedResults as $item) {
+                //     $httpsImage = str_replace('http://', 'https://', $item['image']);
 
-                    array_push(
-                        $products, 
-                        new CarouselColumnTemplateBuilder(
-                            $item['name'],
-                            $item['desc'],
-                            $httpsImage, 
-                            [
-                                new UriTemplateActionBuilder("link", $httpsImage)
-                            ]
-                        )
-                    );
-                }
-
-                // $response = $bot->replyText($event->getReplyToken(), $replyText);
-                $response = $bot->replyMessage(
-                    $event->getReplyToken(), 
-                    new TemplateMessageBuilder(
-                        'alt test', 
-                        new CarouselTemplateBuilder($products)
-                    )
-                );
-
-                // $response = $bot->replyMessage(
-                //     $event->getReplyToken(),
-                //     new TemplateMessageBuilder(
-                //         'alt test',
-                //         new ButtonTemplateBuilder(
-                //             'button title',
-                //             'button button',
-                //             'https://example.com/thumbnail.jpg',
+                //     array_push(
+                //         $products, 
+                //         new CarouselColumnTemplateBuilder(
+                //             $item['name'],
+                //             $item['desc'],
+                //             $httpsImage, 
                 //             [
-                //                 new PostbackTemplateActionBuilder('postback label', 'post=back'),
-                //                 new MessageTemplateActionBuilder('message label', 'test message'),
-                //                 new UriTemplateActionBuilder('uri label', 'https://example.com'),
+                //                 new UriTemplateActionBuilder("link", $httpsImage)
                 //             ]
                 //         )
+                //     );
+                // }
+
+                // // $response = $bot->replyText($event->getReplyToken(), $replyText);
+                // $response = $bot->replyMessage(
+                //     $event->getReplyToken(), 
+                //     new TemplateMessageBuilder(
+                //         'alt test', 
+                //         new CarouselTemplateBuilder($products)
                 //     )
                 // );
+
+                $response = $bot->replyMessage(
+                    $event->getReplyToken(),
+                    new TemplateMessageBuilder(
+                        'alt test',
+                        new ButtonTemplateBuilder(
+                            'button title',
+                            'button button',
+                            null,
+                            [
+                                new PostbackTemplateActionBuilder('postback label', 'post=back'),
+                                new MessageTemplateActionBuilder('message label', 'test message'),
+                                new UriTemplateActionBuilder('uri label', 'https://example.com'),
+                            ]
+                        )
+                    )
+                );
             }
         }
         continue;
