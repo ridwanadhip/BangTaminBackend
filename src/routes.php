@@ -117,6 +117,9 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     );
                 }
             }
+        } else if ($event instanceof PostbackEvent) {
+            error_log($event->getPostbackData());
+            error_log($event->getPostbackParams());
         }
     }
 
