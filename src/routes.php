@@ -164,6 +164,13 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ]);
                     }
 
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => '2',
+                        ],
+                    ]);
+
                     $response = $bot->replyMessage(
                         $event->getReplyToken(), 
                         new TemplateMessageBuilder(
@@ -219,15 +226,10 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 }
             }
         } else if ($event instanceof PostbackEvent) {
-            if ($stateCode == '1') {
-                $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                    GuzzleHttp\RequestOptions::JSON => [
-                        'id' => $state[0]['id'],
-                        'state' => '2',
-                    ],
-                ]);
+            error_log($event->getPostbackData());
 
-                error_log($event->getPostbackData());
+            if ($stateCode == '1') {
+                
             } else if ($stateCode == '2') {
 
             }
