@@ -208,6 +208,8 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             ])
                         )
                     );
+
+                    continue;
                 }
             }
         }
