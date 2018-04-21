@@ -91,6 +91,8 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
+                $replyText = $event->getText();
+
                 if ($stateCode == 'initial') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
@@ -107,18 +109,26 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ->add(newHomeCarousel());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($stateCode == 'secondTime') {
-                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                        GuzzleHttp\RequestOptions::JSON => [
-                            'id' => $state[0]['id'],
-                            'state' => 'mainMenu',
-                        ],
-                    ]);
-
-                    $multi = new MultiMessageBuilder();
-                    $multi
-                        ->add(new TextMessageBuilder('Apa yang bisa abang bantu?'))
-                        ->add(newHomeCarousel());
-                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                    if (strtolower($replyText) == 'hai') {
+                        $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                            GuzzleHttp\RequestOptions::JSON => [
+                                'id' => $state[0]['id'],
+                                'state' => 'mainMenu',
+                            ],
+                        ]);
+    
+                        $multi = new MultiMessageBuilder();
+                        $multi
+                            ->add(new TextMessageBuilder('Apa yang bisa abang bantu?'))
+                            ->add(newHomeCarousel());
+                        $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                    } else {
+                        $multi = new MultiMessageBuilder();
+                        $multi
+                            ->add(new TextMessageBuilder('Kalo ada yang perlu abang bantu, say ‘hai’ aja yaa :D'));
+                        $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                    }
+                    
                 } else if ($stateCode == 'askSpbuLocation') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
@@ -214,7 +224,8 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     $multi = new MultiMessageBuilder();
                     $multi
-                        ->add(new TextMessageBuilder('Okee, Terima Kasih'));
+                        ->add(new TextMessageBuilder('Makasih ya udah hubungin Bang Tamin.' . 
+                        ' Kalo ada yang perlu abang bantu, say ‘hai’ aja yaa :D'));
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
             }
