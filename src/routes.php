@@ -164,7 +164,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         new TemplateMessageBuilder(
                             'init registration',
                             new ButtonTemplateBuilder(
-                                null,
+                                'null',
                                 'Kamu harus terdaftar sebagai member atau login terlebih dahulu',
                                 null,
                                 [
