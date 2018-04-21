@@ -118,7 +118,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 }
             }
         } else if ($event instanceof PostbackEvent) {
-            $response = $bot->replyText($event->getReplyToken(), "Test");
+            $response = $bot->replyText($event->getReplyToken(), $event->getPostbackData());
         }
     }
 
