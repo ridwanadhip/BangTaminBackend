@@ -161,13 +161,8 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     );
 
                     continue;
-                } else if ($stateCode == '2') {
-
                 }
             }
-        } else if ($event instanceof PostbackEvent) {
-            error_log("Here here");
-            error_log($event->getPostbackData());
         }
     }
 
