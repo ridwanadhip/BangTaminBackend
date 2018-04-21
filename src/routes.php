@@ -126,11 +126,12 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $value = $event->getPostbackData();
 
                 if ($value == '1') {
-                    error_log("branch 1");
+                    $replyText = "menu 1";
+                    $response = $bot->replyText($event->getReplyToken(), $replyText);
                 } else if ($value == '2') {
-                    error_log("branch 2");
+                    $replyText = "menu 2";
+                    $response = $bot->replyText($event->getReplyToken(), $replyText);
                 } else if ($value == '3') {
-                    error_log("branch 3");
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
@@ -138,9 +139,11 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
-                    $client = new GuzzleHttp\Client();
                     $result = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
                     $decodedResults = json_decode($result->getBody()->getContents(), true);
+
+                    $replyText = $result->getBody()->getContents();
+                    $response = $bot->replyText($event->getReplyToken(), $replyText);
 
                     $products = [];
                     foreach ($decodedResults as $item) {
@@ -164,9 +167,11 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         )
                     );
                 } else if ($value == '4') {
-                    error_log("branch 4");
+                    $replyText = "menu 4";
+                    $response = $bot->replyText($event->getReplyToken(), $replyText);
                 } else if ($value == '5') {
-                    error_log("branch 5");
+                    $replyText = "menu 5";
+                    $response = $bot->replyText($event->getReplyToken(), $replyText);
                 }
             }
         }
