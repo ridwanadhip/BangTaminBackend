@@ -91,29 +91,20 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
-                if ($stateCode == '0' || $stateCode == '1') {
-                    if ($stateCode == '0') {
-                        $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                            GuzzleHttp\RequestOptions::JSON => [
-                                'id' => $state[0]['id'],
-                                'state' => '1',
-                            ],
-                        ]);
-                    }
-
-                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                        GuzzleHttp\RequestOptions::JSON => [
-                            'id' => $state[0]['id'],
-                            'state' => '2',
-                        ],
-                    ]);
+                if ($stateCode == '0') {
+                    changeState('1');
 
                     $response = $bot->replyMessage(
                         $event->getReplyToken(), 
                         newHomeCarousel()
                     );
+                } else if ($stateCode == '1') {
+                    changeState('2');
 
-                    continue;
+                    $response = $bot->replyMessage(
+                        $event->getReplyToken(), 
+                        newHomeCarousel()
+                    );
                 }
             }
         }
@@ -122,6 +113,15 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     $res->write('OK');
     return $res;
 });
+
+function changeState($code) {
+    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+        GuzzleHttp\RequestOptions::JSON => [
+            'id' => $state[0]['id'],
+            'state' => $code,
+        ],
+    ]);
+}
 
 function newHomeCarousel() {
     return new TemplateMessageBuilder(
