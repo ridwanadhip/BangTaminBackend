@@ -32,6 +32,7 @@ use LINE\LINEBot\Event\UnknownEvent;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
 use function GuzzleHttp\json_decode;
+use function Monolog\Handler\error_log;
 
 const SERVICE_URL = 'https://bang-tamin.herokuapp.com';
 
@@ -140,7 +141,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 if (count($state) > 0) {
                     $stateCode = $state[0]['state'];
                 } else {
-                    $createStateResponse = $client->request('POST', SERVICE_URL.'/bot-states', [
+                    $createJson = $client->request('POST', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'userId' => $userId,
                             'state' => '0',
@@ -155,7 +156,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 
                 if ($stateCode == '0' || $stateCode == '1') {
                     if ($stateCode == '0') {
-                        $changeStateResponse = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                             GuzzleHttp\RequestOptions::JSON => [
                                 'id' => $state[0]['id'],
                                 'state' => '1',
@@ -173,7 +174,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                                     'Info SPBU',
                                     'https://www.example.com/test.jpg', 
                                     [
-                                        new UriTemplateActionBuilder('link', 'https://www.example.com')
+                                        new PostbackTemplateActionBuilder('Detail', 'post=1'),
                                     ]
                                 ),
                                 new CarouselColumnTemplateBuilder(
@@ -181,7 +182,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                                     'Shop',
                                     'https://www.example.com/test.jpg', 
                                     [
-                                        new UriTemplateActionBuilder('link', 'https://www.example.com')
+                                        new PostbackTemplateActionBuilder('Detail', 'post=2'),
                                     ]
                                 ),
                                 new CarouselColumnTemplateBuilder(
@@ -189,7 +190,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                                     'Promo',
                                     'https://www.example.com/test.jpg', 
                                     [
-                                        new UriTemplateActionBuilder('link', 'https://www.example.com')
+                                        new PostbackTemplateActionBuilder('Detail', 'post=3'),
                                     ]
                                 ),
                                 new CarouselColumnTemplateBuilder(
@@ -197,7 +198,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                                     'My Account',
                                     'https://www.example.com/test.jpg', 
                                     [
-                                        new UriTemplateActionBuilder('link', 'https://www.example.com')
+                                        new PostbackTemplateActionBuilder('Detail', 'post=4'),
                                     ]
                                 ),
                                 new CarouselColumnTemplateBuilder(
@@ -205,7 +206,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                                     'Costumer Account',
                                     'https://www.example.com/test.jpg', 
                                     [
-                                        new UriTemplateActionBuilder('link', 'https://www.example.com')
+                                        new PostbackTemplateActionBuilder('Detail', 'post=5'),
                                     ]
                                 ),
                             ])
@@ -213,7 +214,22 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     );
 
                     continue;
+                } else if ($stateCode == '2') {
+
                 }
+            }
+        } else if ($event instanceof PostbackEvent) {
+            if ($stateCode == '1') {
+                $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                    GuzzleHttp\RequestOptions::JSON => [
+                        'id' => $state[0]['id'],
+                        'state' => '2',
+                    ],
+                ]);
+
+                error_log($event->getPostbackData());
+            } else if ($stateCode == '2') {
+
             }
         }
 
