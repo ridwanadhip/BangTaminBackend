@@ -4,6 +4,8 @@ use Slim\Http\Request;
 use Slim\Http\Response;
 use LINE\LINEBot;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselColumnTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
 use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
@@ -30,7 +32,6 @@ use LINE\LINEBot\Event\UnknownEvent;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
 use function GuzzleHttp\json_decode;
-use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
 
 const SERVICE_URL = 'https://bang-tamin.herokuapp.com';
 
@@ -77,41 +78,45 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $decodedResults = json_decode($result->getBody()->getContents(), true);
                 $products = [];
 
-                // foreach ($decodedResults as $item) {
-                //     array_push(
-                //         $products, 
-                //         new ImageCarouselColumnTemplateBuilder(
-                //             $item['image'], 
-                //             new UriTemplateActionBuilder("test", $item['image'])
-                //         )
-                //     );
-                // }
-
-                // // $response = $bot->replyText($event->getReplyToken(), $replyText);
-                // $response = $bot->replyMessage(
-                //     $event->getReplyToken(), 
-                //     new TemplateMessageBuilder(
-                //         'test', 
-                //         new ImageCarouselTemplateBuilder($products)
-                //     )
-                // );
-
-                $response = $bot->replyMessage(
-                    $event->getReplyToken(),
-                    new TemplateMessageBuilder(
-                        'alt test',
-                        new ButtonTemplateBuilder(
-                            'button title',
-                            'button button',
-                            'https://example.com/thumbnail.jpg',
+                foreach ($decodedResults as $item) {
+                    array_push(
+                        $products, 
+                        new CarouselColumnTemplateBuilder(
+                            $item['name'],
+                            $item['desc'],
+                            $item['image'], 
                             [
-                                new PostbackTemplateActionBuilder('postback label', 'post=back'),
-                                new MessageTemplateActionBuilder('message label', 'test message'),
-                                new UriTemplateActionBuilder('uri label', 'https://example.com'),
+                                new UriTemplateActionBuilder("link", $item['image'])
                             ]
                         )
+                    );
+                }
+
+                // $response = $bot->replyText($event->getReplyToken(), $replyText);
+                $response = $bot->replyMessage(
+                    $event->getReplyToken(), 
+                    new TemplateMessageBuilder(
+                        'alt test', 
+                        new CarouselTemplateBuilder($products)
                     )
                 );
+
+                // $response = $bot->replyMessage(
+                //     $event->getReplyToken(),
+                //     new TemplateMessageBuilder(
+                //         'alt test',
+                //         new ButtonTemplateBuilder(
+                //             'button title',
+                //             'button button',
+                //             'https://example.com/thumbnail.jpg',
+                //             [
+                //                 new PostbackTemplateActionBuilder('postback label', 'post=back'),
+                //                 new MessageTemplateActionBuilder('message label', 'test message'),
+                //                 new UriTemplateActionBuilder('uri label', 'https://example.com'),
+                //             ]
+                //         )
+                //     )
+                // );
             }
         }
         continue;
