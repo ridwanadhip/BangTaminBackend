@@ -123,7 +123,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
-                            'state' => 'secondTime',
+                            'state' => 'promptYesNo',
                         ],
                     ]);
 
@@ -135,9 +135,9 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 }
             }
         } else if ($event instanceof PostbackEvent) {
-            if ($stateCode == 'mainMenu') {
-                $value = $event->getPostbackData();
+            $value = $event->getPostbackData();
 
+            if ($stateCode == 'mainMenu') {
                 if ($value == 'spbuMenu') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
@@ -155,7 +155,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
-                            'state' => 'secondTime',
+                            'state' => 'promptYesNo',
                         ],
                     ]);
 
@@ -189,6 +189,33 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 } else if ($value == 'csMenu') {
                     $replyText = "menu 5";
                     $response = $bot->replyText($event->getReplyToken(), $replyText);
+                }
+            } else if ($stateCode == 'promptYesNo') {
+                if ($value == 'yes') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'mainMenu',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Apa yang bisa abang bantu?'))
+                        ->add(newHomeCarousel());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($value == 'no') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'secondTime',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Okee, Terima Kasih'));
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
             }
         }
