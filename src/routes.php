@@ -198,7 +198,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $multi = new MultiMessageBuilder();
                     $multi
                         ->add(new TextMessageBuilder('Okee, Bang Tamin punya promo nih buat kamu!'))
-                        ->add(new TemplateMessageBuilder('promo test', new CarouselTemplateBuilder($promotions)))
+                        ->add(new TemplateMessageBuilder('select promo', new CarouselTemplateBuilder($promotions)))
                         ->add(newDecisionButtons());;
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($value == 'accountMenu') {
@@ -264,7 +264,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
 function newDecisionButtons() {
     return new TemplateMessageBuilder(
-        'decision test',
+        'select decision',
         new ButtonTemplateBuilder(
             null,
             'Ada lagi yang dapat abang bantu?',
@@ -279,7 +279,7 @@ function newDecisionButtons() {
 
 function newAccountButtons() {
     return new TemplateMessageBuilder(
-        'account test',
+        'select account menu',
         new ButtonTemplateBuilder(
             null,
             'Kamu harus terdaftar sebagai member atau login terlebih dahulu',
@@ -295,7 +295,7 @@ function newAccountButtons() {
 
 function newServiceButtons() {
     return new TemplateMessageBuilder(
-        'service test',
+        'select service',
         new ButtonTemplateBuilder(
             null,
             'Apa yang ingin kamu sampaikan?',
@@ -312,7 +312,7 @@ function newServiceButtons() {
 
 function newProductButtons() {
     return new TemplateMessageBuilder(
-        'product test',
+        'select product',
         new ButtonTemplateBuilder(
             null,
             'Produk apa yang ingin kamu beli?',
@@ -329,7 +329,7 @@ function newProductButtons() {
 
 function newHomeCarousel() {
     return new TemplateMessageBuilder(
-        'alt test', 
+        'select main menu', 
         new CarouselTemplateBuilder([
             new CarouselColumnTemplateBuilder(
                 null,
@@ -377,7 +377,7 @@ function newHomeCarousel() {
 
 // function newPromoCarousel() {
 //     return new TemplateMessageBuilder(
-//         'promo test', 
+//         'select promo', 
 //         new CarouselTemplateBuilder([
 //             new CarouselColumnTemplateBuilder(
 //                 null,
