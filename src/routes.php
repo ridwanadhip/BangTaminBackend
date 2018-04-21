@@ -147,6 +147,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
+                    $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
                     $state = json_decode($stateJson->getBody()->getContents(), true);
 
                     // TODO: handle error
