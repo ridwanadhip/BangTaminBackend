@@ -147,6 +147,8 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
+                    $state = json_decode($stateJson->getBody()->getContents(), true);
+
                     // TODO: handle error
                 }
                 
