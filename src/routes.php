@@ -149,15 +149,17 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     // TODO: handle error
                 }
+                
+                if ($stateCode == '0' || $stateCode == '1') {
+                    if ($stateCode == '0') {
+                        $changeStateResponse = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                            GuzzleHttp\RequestOptions::JSON => [
+                                'id' => $state[0]['id'],
+                                'state' => '1',
+                            ],
+                        ]);
+                    }
 
-                if ($stateCode == '0') {
-                    $changeStateResponse = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                        GuzzleHttp\RequestOptions::JSON => [
-                            'id' => $state[0]['id'],
-                            'state' => '1',
-                        ],
-                    ]);
-                } else if ($stateCode == '1') {
                     $response = $bot->replyMessage(
                         $event->getReplyToken(), 
                         new TemplateMessageBuilder(
