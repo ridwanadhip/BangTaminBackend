@@ -25,7 +25,7 @@ $app->get('/', function (Request $request, Response $response, array $args) {
     return $this->renderer->render($response, 'index.phtml', $args);
 });
 
-$app->post('/callback', function (Request $req, Response $res, array $args) {
+$app->post('/', function (Request $req, Response $res, array $args) {
     $bot = getBot();
     $logger = $this->logger;
 
