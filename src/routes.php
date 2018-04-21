@@ -54,9 +54,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     $bot = $this->bot;
     $logger = $this->logger;
 
-    error_log($req->getHeader());
-    error_log($req->getBody()->getContents());
-
     $signature = $req->getHeader(HTTPHeader::LINE_SIGNATURE);
     if (empty($signature)) {
         return $res->withStatus(400, 'Bad Request');
