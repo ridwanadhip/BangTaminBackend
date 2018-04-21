@@ -127,9 +127,18 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                 $userId = $event->getUserId();
                 $client = new GuzzleHttp\Client();
-                $result = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
-                $replyText = $result->getBody()->getContents();
-                $response = $bot->replyText($event->getReplyToken(), $replyText);
+
+                $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
+                $state = json_decode($result->getBody()->getContents(), true);
+
+                if (count($state) == 0) {
+                    $createStateResponse = $client->request('POST', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'userId' => $userId,
+                            'state' => '0',
+                        ],
+                    ]);
+                }
             }
         }
 
