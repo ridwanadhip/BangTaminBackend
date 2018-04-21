@@ -35,9 +35,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     $bot = $this->bot;
     $logger = $this->logger;
 
-    // $logger->info('Reply text: ' . $replyText);
-    // $logger->info($response->getHTTPStatus() . ': ' . $response->getRawBody());
-
     $signature = $req->getHeader(HTTPHeader::LINE_SIGNATURE);
     if (empty($signature)) {
         return $res->withStatus(400, 'Bad Request');
@@ -59,7 +56,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     'auth' => ['user', 'pass']
                 ]);
 
-                $replyText = $result->getBody();
+                $replyText = $result->getBody()->getContents();
                 $response = $bot->replyText($event->getReplyToken(), $replyText);
             }
         }
