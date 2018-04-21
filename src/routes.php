@@ -69,30 +69,30 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     }
 
     foreach ($events as $event) {
-        $userId = $event->getUserId();
-        $client = new GuzzleHttp\Client();
-        $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
-        $state = json_decode($stateJson->getBody()->getContents(), true);
-
-        $code = '0';
-        if (count($state) > 0) {
-            $code = $state[0]['state'];
-        } else {
-            $createJson = $client->request('POST', SERVICE_URL.'/bot-states', [
-                GuzzleHttp\RequestOptions::JSON => [
-                    'userId' => $userId,
-                    'state' => '0',
-                ],
-            ]);
-
-            $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
-            $state = json_decode($stateJson->getBody()->getContents(), true);
-        }
-
-        $id = state[0]['id'];
-
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
+                $userId = $event->getUserId();
+                $client = new GuzzleHttp\Client();
+                $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
+                $state = json_decode($stateJson->getBody()->getContents(), true);
+
+                $code = '0';
+                if (count($state) > 0) {
+                    $code = $state[0]['state'];
+                } else {
+                    $createJson = $client->request('POST', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'userId' => $userId,
+                            'state' => '0',
+                        ],
+                    ]);
+
+                    $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
+                    $state = json_decode($stateJson->getBody()->getContents(), true);
+                }
+
+                $id = state[0]['id'];
+
                 if ($code == '0') {
                     changeState($id, '1');
 
