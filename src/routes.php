@@ -150,7 +150,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                                 $item['desc'],
                                 $item['image'], 
                                 [
-                                    new UriTemplateActionBuilder("link", $item['image'])
+                                    new PostbackTemplateActionBuilder('Detail', $item['id']),
                                 ]
                             )
                         );
