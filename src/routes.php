@@ -146,7 +146,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 }
 
                 if ($stateCode == '0') {
-                    $stateJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                    $changeStateResponse = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
                             'state' => '1',
