@@ -84,9 +84,9 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         new CarouselColumnTemplateBuilder(
                             $item['name'],
                             $item['desc'],
-                            $item['image'], 
+                            'https://example.com/thumbnail.jpg', 
                             [
-                                new UriTemplateActionBuilder("link", $item['image'])
+                                new UriTemplateActionBuilder("link", 'https://example.com/thumbnail.jpg')
                             ]
                         )
                     );
