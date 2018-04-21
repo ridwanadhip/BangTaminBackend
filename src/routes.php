@@ -26,17 +26,13 @@ use LINE\LINEBot\Exception\InvalidSignatureException;
 
 const SERVICE_URL = 'https://bang-tamin.herokuapp.com';
 
-function getBot(): LINEBot {
-    $app->bot;
-}
-
 $app->get('/', function (Request $request, Response $response, array $args) {
     $this->logger->info("Slim-Skeleton '/' route");
     return $this->renderer->render($response, 'index.phtml', $args);
 });
 
 $app->post('/', function (Request $req, Response $res, array $args) {
-    $bot = getBot();
+    $bot = $this->bot;
     $logger = $this->logger;
 
     // $logger->info('Reply text: ' . $replyText);
