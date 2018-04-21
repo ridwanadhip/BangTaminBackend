@@ -138,31 +138,31 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     ]);
 
                     $promotionsJson = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
-                    $response = $bot->replyText($promotionsJson->getBody()->getContents());
-                    // $decodedResults = json_decode($promotionsJson->getBody()->getContents(), true);
+                    error_log($promotionsJson->getBody()->getContents());
+                    $decodedResults = json_decode($promotionsJson->getBody()->getContents(), true);
 
-                    // $promotions = [];
-                    // foreach ($decodedResults as $item) {
-                    //     array_push(
-                    //         $promotions, 
-                    //         new CarouselColumnTemplateBuilder(
-                    //             $item['title'],
-                    //             $item['desc'],
-                    //             $item['image'], 
-                    //             [
-                    //                 new PostbackTemplateActionBuilder('Detail', $item['id']),
-                    //             ]
-                    //         )
-                    //     );
-                    // }
+                    $promotions = [];
+                    foreach ($decodedResults as $item) {
+                        array_push(
+                            $promotions, 
+                            new CarouselColumnTemplateBuilder(
+                                $item['title'],
+                                $item['desc'],
+                                $item['image'], 
+                                [
+                                    new PostbackTemplateActionBuilder('Detail', $item['id']),
+                                ]
+                            )
+                        );
+                    }
 
-                    // $response = $bot->replyMessage(
-                    //     $event->getReplyToken(), 
-                    //     new TemplateMessageBuilder(
-                    //         'carousel promo', 
-                    //         new CarouselTemplateBuilder($promotions)
-                    //     )
-                    // );
+                    $response = $bot->replyMessage(
+                        $event->getReplyToken(), 
+                        new TemplateMessageBuilder(
+                            'carousel promo', 
+                            new CarouselTemplateBuilder($promotions)
+                        )
+                    );
                 } else if ($value == '4') {
                     $replyText = "menu 4";
                     $response = $bot->replyText($event->getReplyToken(), $replyText);
