@@ -54,6 +54,9 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     $bot = $this->bot;
     $logger = $this->logger;
 
+    error_log($req->getHeader());
+    error_log($req->getBody());
+
     $signature = $req->getHeader(HTTPHeader::LINE_SIGNATURE);
     if (empty($signature)) {
         return $res->withStatus(400, 'Bad Request');
@@ -71,16 +74,20 @@ $app->post('/', function (Request $req, Response $res, array $args) {
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
                 $client = new GuzzleHttp\Client();
-                $result = $client->request('GET', SERVICE_URL.'/products', [
-                    'auth' => ['user', 'pass']
-                ]);
-
+                $result = $client->request('GET', SERVICE_URL.'/products', ['auth' => ['user', 'pass']]);
                 $decodedResults = json_decode($result->getBody()->getContents(), true);
-                $products = [];
 
+                $replyText = $bot->getProfile();
+                $response = $bot->replyText($event->getReplyToken(), $replyText);
+
+                // // Example of text
+                // $replyText = $event->getText();
+                // $response = $bot->replyText($event->getReplyToken(), $replyText);
+
+                // // Example of carousel
+                // $products = [];
                 // foreach ($decodedResults as $item) {
                 //     $httpsImage = str_replace('http://', 'https://', $item['image']);
-
                 //     array_push(
                 //         $products, 
                 //         new CarouselColumnTemplateBuilder(
@@ -93,8 +100,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 //         )
                 //     );
                 // }
-
-                // // $response = $bot->replyText($event->getReplyToken(), $replyText);
                 // $response = $bot->replyMessage(
                 //     $event->getReplyToken(), 
                 //     new TemplateMessageBuilder(
@@ -103,22 +108,23 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 //     )
                 // );
 
-                $response = $bot->replyMessage(
-                    $event->getReplyToken(),
-                    new TemplateMessageBuilder(
-                        'alt test',
-                        new ButtonTemplateBuilder(
-                            'button title',
-                            'button button',
-                            null,
-                            [
-                                new PostbackTemplateActionBuilder('postback label', 'post=back'),
-                                new MessageTemplateActionBuilder('message label', 'test message'),
-                                new UriTemplateActionBuilder('uri label', 'https://example.com'),
-                            ]
-                        )
-                    )
-                );
+                // // Example of button
+                // $response = $bot->replyMessage(
+                //     $event->getReplyToken(),
+                //     new TemplateMessageBuilder(
+                //         'alt test',
+                //         new ButtonTemplateBuilder(
+                //             null,
+                //             'button button',
+                //             null,
+                //             [
+                //                 new PostbackTemplateActionBuilder('postback label', 'post=back'),
+                //                 new MessageTemplateActionBuilder('message label', 'test message'),
+                //                 new UriTemplateActionBuilder('uri label', 'https://example.com'),
+                //             ]
+                //         )
+                //     )
+                // );
             }
         }
         continue;
