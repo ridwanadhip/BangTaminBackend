@@ -202,8 +202,17 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ->add(newDecisionButtons());;
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($value == 'accountMenu') {
-                    $replyText = "menu 4";
-                    $response = $bot->replyText($event->getReplyToken(), $replyText);
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'promptAccountMenu',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(newAccountButtons());;
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($value == 'csMenu') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
@@ -268,6 +277,22 @@ function newDecisionButtons() {
     );
 }
 
+function newAccountButtons() {
+    return new TemplateMessageBuilder(
+        'account test',
+        new ButtonTemplateBuilder(
+            null,
+            'Kamu harus terdaftar sebagai member atau login terlebih dahulu',
+            null,
+            [
+                new PostbackTemplateActionBuilder('Daftar', 'accountRegister'),
+                new PostbackTemplateActionBuilder('Login', 'accountLogin'),
+                new PostbackTemplateActionBuilder('Menu utama', 'accountMainMenu'),
+            ]
+        )
+    );
+}
+
 function newServiceButtons() {
     return new TemplateMessageBuilder(
         'service test',
@@ -277,7 +302,7 @@ function newServiceButtons() {
             null,
             [
                 new PostbackTemplateActionBuilder('Pelayanan', 'serviceService'),
-                new PostbackTemplateActionBuilder('Harga & Transaksi', 'servicePrice'),
+                new PostbackTemplateActionBuilder('Harga & transaksi', 'servicePrice'),
                 new PostbackTemplateActionBuilder('Kenyamanan tempat', 'servicePlace'),
                 new PostbackTemplateActionBuilder('Lain-lain', 'serviceOther'),
             ]
@@ -294,7 +319,7 @@ function newProductButtons() {
             null,
             [
                 new PostbackTemplateActionBuilder('Bright Gas', 'productGas'),
-                new PostbackTemplateActionBuilder('Food & Drink', 'productFood'),
+                new PostbackTemplateActionBuilder('Food & drink', 'productFood'),
                 new PostbackTemplateActionBuilder('Oil', 'productOil'),
                 new PostbackTemplateActionBuilder('Others', 'productOther'),
             ]
