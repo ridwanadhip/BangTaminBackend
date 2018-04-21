@@ -55,7 +55,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     $logger = $this->logger;
 
     error_log($req->getHeader());
-    error_log($req->getBody());
+    error_log($req->getBody()->getContents());
 
     $signature = $req->getHeader(HTTPHeader::LINE_SIGNATURE);
     if (empty($signature)) {
