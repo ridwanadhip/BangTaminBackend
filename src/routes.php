@@ -74,9 +74,9 @@ $app->post('/', function (Request $req, Response $res, array $args) {
         $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
         $state = json_decode($stateJson->getBody()->getContents(), true);
 
-        $stateCode = '0';
+        $code = '0';
         if (count($state) > 0) {
-            $stateCode = $state[0]['state'];
+            $code = $state[0]['state'];
         } else {
             $createJson = $client->request('POST', SERVICE_URL.'/bot-states', [
                 GuzzleHttp\RequestOptions::JSON => [
@@ -89,16 +89,18 @@ $app->post('/', function (Request $req, Response $res, array $args) {
             $state = json_decode($stateJson->getBody()->getContents(), true);
         }
 
+        $id = state[0]['id'];
+
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
-                if ($stateCode == '0') {
+                if ($code == '0') {
                     changeState('1');
 
                     $response = $bot->replyMessage(
                         $event->getReplyToken(), 
                         newHomeCarousel()
                     );
-                } else if ($stateCode == '1') {
+                } else if ($code == '1') {
                     changeState('2');
 
                     $response = $bot->replyMessage(
@@ -114,10 +116,11 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     return $res;
 });
 
-function changeState($code) {
+function changeState($id, $code) {
+    $client = new GuzzleHttp\Client();
     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
         GuzzleHttp\RequestOptions::JSON => [
-            'id' => $state[0]['id'],
+            'id' => $id,
             'state' => $code,
         ],
     ]);
