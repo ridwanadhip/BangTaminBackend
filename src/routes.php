@@ -122,10 +122,12 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 }
             }
         } else if ($event instanceof PostbackEvent) {
+            error_log($event->getPostbackData());
+            error_log($stateCode);
+
             if ($stateCode == '2') {
                 $value = $event->getPostbackData();
-                error_log($value);
-
+                
                 if ($value == '1') {
 
                 } else if ($value == '2') {
