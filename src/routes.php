@@ -41,18 +41,18 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     }
 
     foreach ($events as $event) {
-        // if ($event instanceof MessageEvent) {
-        //     if ($event instanceof TextMessage) {
-        //         $replyText = $event->getText();
-        //         $response = $bot->replyText($event->getReplyToken(), $replyText);
-        //     }
-        // } else if ($event instanceof JoinEvent) {
-        //     $response = $bot->replyText($event->getReplyToken(), "Selamat Datang!");
-        // }
+        if ($event instanceof MessageEvent) {
+            if ($event instanceof TextMessage) {
+                $replyText = $event->getText();
+                $response = $bot->replyText($event->getReplyToken(), $replyText);
+            }
+        } else if ($event instanceof JoinEvent) {
+            $response = $bot->replyText($event->getReplyToken(), "Selamat Datang!");
+        }
 
         // $logger->info('Reply text: ' . $replyText);
         // $logger->info($response->getHTTPStatus() . ': ' . $response->getRawBody());
-        $response = $bot->replyText($event->getReplyToken(), $replyText);
+        continue;
     }
 
     $res->write('OK');
