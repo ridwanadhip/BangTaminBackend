@@ -101,9 +101,9 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     $multi = new MultiMessageBuilder();
                     $multi
-                        ->add(new TextMessageBuilder('Halo! Perkenalkan saya Bang Tamin. Saya akan membantu kamu
-                        mendapatkan keuntungan dari produk Pertamina. Silakan pilih
-                        menu di bawah ini untuk melanjutkan.'))
+                        ->add(new TextMessageBuilder('Halo! Perkenalkan saya Bang Tamin. ' . 
+                        'Saya akan membantu kamu mendapatkan keuntungan dari produk Pertamina. ' . 
+                        'Silakan pilih menu di bawah ini untuk melanjutkan.'))
                         ->add(newHomeCarousel());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($stateCode == 'secondTime') {
@@ -123,9 +123,15 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
-                            'state' => 'exitToMainMenu',
+                            'state' => 'secondTime',
                         ],
                     ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('SPBU di dekat Sarinah terletak di Jalan ABCD No. 21 samping McD'))
+                        ->add(newDecisionButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
             }
         } else if ($event instanceof PostbackEvent) {
@@ -149,32 +155,33 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
-                            'state' => 'exitToMainMenu',
+                            'state' => 'secondTime',
                         ],
                     ]);
 
-                    $promotionsJson = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
-                    $decodedResults = json_decode($promotionsJson->getBody()->getContents(), true);
+                    // $promotionsJson = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
+                    // $decodedResults = json_decode($promotionsJson->getBody()->getContents(), true);
 
-                    $promotions = [];
-                    foreach ($decodedResults as $item) {
-                        array_push(
-                            $promotions, 
-                            new CarouselColumnTemplateBuilder(
-                                $item['title'],
-                                $item['desc'],
-                                $item['image'], 
-                                [
-                                    new PostbackTemplateActionBuilder('Detail', $item['id']),
-                                ]
-                            )
-                        );
-                    }
+                    // $promotions = [];
+                    // foreach ($decodedResults as $item) {
+                    //     array_push(
+                    //         $promotions, 
+                    //         new CarouselColumnTemplateBuilder(
+                    //             $item['title'],
+                    //             $item['desc'],
+                    //             $item['image'], 
+                    //             [
+                    //                 new PostbackTemplateActionBuilder('Detail', $item['id']),
+                    //             ]
+                    //         )
+                    //     );
+                    // }
 
                     $multi = new MultiMessageBuilder();
                     $multi
                         ->add(new TextMessageBuilder('Okee, Bang Tamin punya promo nih buat kamu!'))
-                        ->add(newPromoCarousel());
+                        ->add(newPromoCarousel())
+                        ->add(newDecisionButtons());;
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($value == 'accountMenu') {
                     $replyText = "menu 4";
@@ -190,6 +197,21 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     $res->write('OK');
     return $res;
 });
+
+function newDecisionButtons() {
+    return new TemplateMessageBuilder(
+        'decision test',
+        new ButtonTemplateBuilder(
+            null,
+            'Ada lagi yang dapat abang bantu?',
+            null,
+            [
+                new PostbackTemplateActionBuilder('Ya', 'yes'),
+                new PostbackTemplateActionBuilder('Tidak', 'no'),
+            ]
+        )
+    );
+}
 
 function newHomeCarousel() {
     return new TemplateMessageBuilder(
