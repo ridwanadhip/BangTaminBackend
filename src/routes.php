@@ -145,27 +145,27 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $replyText = $result->getBody()->getContents();
                     $response = $bot->replyText($event->getReplyToken(), $replyText);
 
-                    $products = [];
-                    foreach ($decodedResults as $item) {
-                        array_push(
-                            $products, 
-                            new CarouselColumnTemplateBuilder(
-                                $item['title'],
-                                $item['desc'],
-                                $item['image'], 
-                                [
-                                    new PostbackTemplateActionBuilder('Detail', $item['id']),
-                                ]
-                            )
-                        );
-                    }
-                    $response = $bot->replyMessage(
-                        $event->getReplyToken(), 
-                        new TemplateMessageBuilder(
-                            'carousel promo', 
-                            new CarouselTemplateBuilder($products)
-                        )
-                    );
+                    // $products = [];
+                    // foreach ($decodedResults as $item) {
+                    //     array_push(
+                    //         $products, 
+                    //         new CarouselColumnTemplateBuilder(
+                    //             $item['title'],
+                    //             $item['desc'],
+                    //             $item['image'], 
+                    //             [
+                    //                 new PostbackTemplateActionBuilder('Detail', $item['id']),
+                    //             ]
+                    //         )
+                    //     );
+                    // }
+                    // $response = $bot->replyMessage(
+                    //     $event->getReplyToken(), 
+                    //     new TemplateMessageBuilder(
+                    //         'carousel promo', 
+                    //         new CarouselTemplateBuilder($products)
+                    //     )
+                    // );
                 } else if ($value == '4') {
                     $replyText = "menu 4";
                     $response = $bot->replyText($event->getReplyToken(), $replyText);
@@ -188,7 +188,7 @@ function newHomeCarousel() {
             new CarouselColumnTemplateBuilder(
                 null,
                 'Info SPBU',
-                'https://www.example.com/test.jpg', 
+                'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316653/station.png', 
                 [
                     new PostbackTemplateActionBuilder('Detail', '1'),
                 ]
@@ -196,7 +196,7 @@ function newHomeCarousel() {
             new CarouselColumnTemplateBuilder(
                 null,
                 'Shop',
-                'https://www.example.com/test.jpg', 
+                'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316643/shop.png', 
                 [
                     new PostbackTemplateActionBuilder('Detail', '2'),
                 ]
@@ -204,7 +204,7 @@ function newHomeCarousel() {
             new CarouselColumnTemplateBuilder(
                 null,
                 'Promo',
-                'https://www.example.com/test.jpg', 
+                'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316632/promo.png', 
                 [
                     new PostbackTemplateActionBuilder('Detail', '3'),
                 ]
@@ -212,7 +212,7 @@ function newHomeCarousel() {
             new CarouselColumnTemplateBuilder(
                 null,
                 'My Account',
-                'https://www.example.com/test.jpg', 
+                'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316569/account.png', 
                 [
                     new PostbackTemplateActionBuilder('Detail', '4'),
                 ]
@@ -220,7 +220,7 @@ function newHomeCarousel() {
             new CarouselColumnTemplateBuilder(
                 null,
                 'Costumer Account',
-                'https://www.example.com/test.jpg', 
+                'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316585/cust_service.png', 
                 [
                     new PostbackTemplateActionBuilder('Detail', '5'),
                 ]
