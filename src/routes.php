@@ -142,10 +142,10 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $promotionsJson = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
                     $decodedResults = json_decode($promotionsJson->getBody()->getContents(), true);
 
-                    $products = [];
+                    $promotions = [];
                     foreach ($decodedResults as $item) {
                         array_push(
-                            $products, 
+                            $promotions, 
                             new CarouselColumnTemplateBuilder(
                                 $item['title'],
                                 $item['desc'],
@@ -156,11 +156,12 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             )
                         );
                     }
+
                     $response = $bot->replyMessage(
                         $event->getReplyToken(), 
                         new TemplateMessageBuilder(
                             'carousel promo', 
-                            new CarouselTemplateBuilder($products)
+                            new CarouselTemplateBuilder($promotions)
                         )
                     );
                 } else if ($value == '4') {
