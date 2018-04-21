@@ -101,11 +101,17 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
-                    $response = $bot->replyText($event->getReplyToken(), 'Apa yang bisa abang bantu?');
-                    $response = $bot->replyMessage(
-                        $event->getReplyToken(), 
-                        newHomeCarousel()
-                    );
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Apa yang bisa abang bantu?'))
+                        ->add(newHomeCarousel());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+
+                    // $response = $bot->replyText($event->getReplyToken(), 'Apa yang bisa abang bantu?');
+                    // $response = $bot->replyMessage(
+                    //     $event->getReplyToken(), 
+                    //     newHomeCarousel()
+                    // );
                 } else if ($stateCode == '1') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
