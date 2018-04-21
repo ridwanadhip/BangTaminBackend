@@ -94,35 +94,25 @@ $app->post('/', function (Request $req, Response $res, array $args) {
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
                 if ($stateCode == '0') {
-                    // $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                    //     GuzzleHttp\RequestOptions::JSON => [
-                    //         'id' => $state[0]['id'],
-                    //         'state' => '2',
-                    //     ],
-                    // ]);
-
-                    $changeJson = changeState('2');
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => '2',
+                        ],
+                    ]);
 
                     $multi = new MultiMessageBuilder();
                     $multi
                         ->add(new TextMessageBuilder('Apa yang bisa abang bantu?'))
                         ->add(newHomeCarousel());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
-
-                    // $response = $bot->replyText($event->getReplyToken(), 'Apa yang bisa abang bantu?');
-                    // $response = $bot->replyMessage(
-                    //     $event->getReplyToken(), 
-                    //     newHomeCarousel()
-                    // );
                 } else if ($stateCode == '1') {
-                    // $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                    //     GuzzleHttp\RequestOptions::JSON => [
-                    //         'id' => $state[0]['id'],
-                    //         'state' => '2',
-                    //     ],
-                    // ]);
-
-                    $changeJson = changeState('2');
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => '2',
+                        ],
+                    ]);
 
                     $multi = new MultiMessageBuilder();
                     $multi
@@ -132,8 +122,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 }
             }
         } else if ($event instanceof PostbackEvent) {
-            // $response = $bot->replyText($event->getReplyToken(), $event->getPostbackData());
-
             if ($stateCode == '2') {
                 $value = $event->getPostbackData();
 
@@ -142,7 +130,38 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 } else if ($value == '2') {
                     
                 } else if ($value == '3') {
-                    
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => '8',
+                        ],
+                    ]);
+
+                    $client = new GuzzleHttp\Client();
+                    $result = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
+                    $decodedResults = json_decode($result->getBody()->getContents(), true);
+
+                    $products = [];
+                    foreach ($decodedResults as $item) {
+                        array_push(
+                            $products, 
+                            new CarouselColumnTemplateBuilder(
+                                $item['title'],
+                                $item['desc'],
+                                $item['image'], 
+                                [
+                                    new UriTemplateActionBuilder("link", $item['image'])
+                                ]
+                            )
+                        );
+                    }
+                    $response = $bot->replyMessage(
+                        $event->getReplyToken(), 
+                        new TemplateMessageBuilder(
+                            'carousel promo', 
+                            new CarouselTemplateBuilder($products)
+                        )
+                    );
                 } else if ($value == '4') {
                     
                 } else if ($value == '5') {
@@ -155,15 +174,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     $res->write('OK');
     return $res;
 });
-
-function changeState($code) {
-    return $client->request('PUT', SERVICE_URL.'/bot-states', [
-        GuzzleHttp\RequestOptions::JSON => [
-            'id' => $state[0]['id'],
-            'state' => $code,
-        ],
-    ]);
-}
 
 function newHomeCarousel() {
     return new TemplateMessageBuilder(
