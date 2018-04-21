@@ -205,8 +205,17 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $replyText = "menu 4";
                     $response = $bot->replyText($event->getReplyToken(), $replyText);
                 } else if ($value == 'csMenu') {
-                    $replyText = "menu 5";
-                    $response = $bot->replyText($event->getReplyToken(), $replyText);
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'promptService',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(newServiceButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
             } else if ($stateCode == 'promptYesNo') {
                 if ($value == 'yes') {
@@ -254,6 +263,23 @@ function newDecisionButtons() {
             [
                 new PostbackTemplateActionBuilder('Ya', 'yes'),
                 new PostbackTemplateActionBuilder('Tidak', 'no'),
+            ]
+        )
+    );
+}
+
+function newServiceButtons() {
+    return new TemplateMessageBuilder(
+        'service test',
+        new ButtonTemplateBuilder(
+            null,
+            'Apa yang ingin kamu sampaikan?',
+            null,
+            [
+                new PostbackTemplateActionBuilder('Pelayanan', 'serviceService'),
+                new PostbackTemplateActionBuilder('Harga & Transaksi', 'servicePrice'),
+                new PostbackTemplateActionBuilder('Kenyamanan tempat', 'servicePlace'),
+                new PostbackTemplateActionBuilder('Lain-lain', 'serviceOther'),
             ]
         )
     );
