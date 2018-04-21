@@ -131,6 +131,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
                 $state = json_decode($stateJson->getBody()->getContents(), true);
 
+                $stateCode = '0';
                 if (count($state) == 0) {
                     $createStateResponse = $client->request('POST', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
@@ -138,7 +139,11 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             'state' => '0',
                         ],
                     ]);
+                } else {
+                    $stateCode = $state[0]['state'];
                 }
+
+                error_log($stateCode);
             }
         }
 
