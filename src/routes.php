@@ -158,23 +158,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
-                    // TODO: handle error
-                    $response = $bot->replyMessage(
-                        $event->getReplyToken(),
-                        new TemplateMessageBuilder(
-                            'init registration',
-                            new ButtonTemplateBuilder(
-                                'null',
-                                'Kamu harus terdaftar sebagai member atau login terlebih dahulu',
-                                null,
-                                [
-                                    new PostbackTemplateActionBuilder('Daftar', 'value=1'),
-                                    new PostbackTemplateActionBuilder('Login', 'value=2'),
-                                    new PostbackTemplateActionBuilder('Menu Utama', 'value=3'),
-                                ]
-                            )
-                        )
-                    );
+                    
                     continue;
                 }
             }
