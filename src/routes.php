@@ -3,29 +3,44 @@
 use Slim\Http\Request;
 use Slim\Http\Response;
 use LINE\LINEBot;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
 use LINE\LINEBot\Constant\HTTPHeader;
-use LINE\LINEBot\Event\MessageEvent;
-use LINE\LINEBot\Event\MessageEvent\TextMessage;
+use LINE\LINEBot\Event\BeaconDetectionEvent;
+use LINE\LINEBot\Event\FollowEvent;
 use LINE\LINEBot\Event\JoinEvent;
+use LINE\LINEBot\Event\LeaveEvent;
+use LINE\LINEBot\Event\MessageEvent;
+use LINE\LINEBot\Event\MessageEvent\AudioMessage;
+use LINE\LINEBot\Event\MessageEvent\ImageMessage;
+use LINE\LINEBot\Event\MessageEvent\LocationMessage;
+use LINE\LINEBot\Event\MessageEvent\StickerMessage;
+use LINE\LINEBot\Event\MessageEvent\TextMessage;
+use LINE\LINEBot\Event\MessageEvent\UnknownMessage;
+use LINE\LINEBot\Event\MessageEvent\VideoMessage;
+use LINE\LINEBot\Event\PostbackEvent;
+use LINE\LINEBot\Event\UnfollowEvent;
+use LINE\LINEBot\Event\UnknownEvent;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
 
 const SERVICE_URL = 'https://bang-tamin.herokuapp.com';
 
+function getBot(): LINEBot {
+    $app->bot;
+}
+
 $app->get('/', function (Request $request, Response $response, array $args) {
-    // $client = new GuzzleHttp\Client();
-    // $res = $client->request('GET', SERVICE_URL."/products", [
-    //     'auth' => ['user', 'pass']
-    // ]);
-    // $res->getBody();
-    // Render index view
     $this->logger->info("Slim-Skeleton '/' route");
     return $this->renderer->render($response, 'index.phtml', $args);
 });
 
 $app->post('/', function (Request $req, Response $res, array $args) {
-    $bot = $this->bot;
+    $bot = getBot();
     $logger = $this->logger;
+
+    // $logger->info('Reply text: ' . $replyText);
+    // $logger->info($response->getHTTPStatus() . ': ' . $response->getRawBody());
 
     $signature = $req->getHeader(HTTPHeader::LINE_SIGNATURE);
     if (empty($signature)) {
@@ -43,15 +58,13 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     foreach ($events as $event) {
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
-                $replyText = $event->getText();
+                $client = new GuzzleHttp\Client();
+                $res = $client->request('GET', SERVICE_URL."/products", []);
+                $replyText = $res->getBody();
                 $response = $bot->replyText($event->getReplyToken(), $replyText);
             }
-        } else if ($event instanceof JoinEvent) {
-            $response = $bot->replyText($event->getReplyToken(), "Selamat Datang!");
         }
 
-        // $logger->info('Reply text: ' . $replyText);
-        // $logger->info($response->getHTTPStatus() . ': ' . $response->getRawBody());
         continue;
     }
 
