@@ -71,66 +71,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     foreach ($events as $event) {
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
-                // // get request from backend
-                // $client = new GuzzleHttp\Client();
-                // $result = $client->request('GET', SERVICE_URL.'/products', ['auth' => ['user', 'pass']]);
-                // $decodedResults = json_decode($result->getBody()->getContents(), true);
-
-                // // Error log to heroku
-                // error_log($event->getText());
-                // error_log($event->getUserId());
-
-                // // Example of text
-                // $replyText = $event->getText();
-                // $response = $bot->replyText($event->getReplyToken(), $replyText);
-
-                // // Example of carousel
-                // $products = [];
-                // foreach ($decodedResults as $item) {
-                //     $httpsImage = str_replace('http://', 'https://', $item['image']);
-                //     array_push(
-                //         $products, 
-                //         new CarouselColumnTemplateBuilder(
-                //             $item['name'],
-                //             $item['desc'],
-                //             $httpsImage, 
-                //             [
-                //                 new UriTemplateActionBuilder("link", $httpsImage)
-                //             ]
-                //         )
-                //     );
-                // }
-                // $response = $bot->replyMessage(
-                //     $event->getReplyToken(), 
-                //     new TemplateMessageBuilder(
-                //         'alt test', 
-                //         new CarouselTemplateBuilder($products)
-                //     )
-                // );
-
-                // // Example of button
-                // $response = $bot->replyMessage(
-                //     $event->getReplyToken(),
-                //     new TemplateMessageBuilder(
-                //         'alt test',
-                //         new ButtonTemplateBuilder(
-                //             null,
-                //             'button button',
-                //             null,
-                //             [
-                //                 new PostbackTemplateActionBuilder('postback label', 'post=back'),
-                //                 new MessageTemplateActionBuilder('message label', 'test message'),
-                //                 new UriTemplateActionBuilder('uri label', 'https://example.com'),
-                //             ]
-                //         )
-                //     )
-                // );
-
-                // // Example of multiline
-                // $reply = "Selamat datang\n" . 
-                //     "Pilih salah satu menu berikut:\n";
-                // $response = $bot->replyText($event->getReplyToken(), $reply);
-
                 $userId = $event->getUserId();
                 $client = new GuzzleHttp\Client();
                 $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
@@ -228,15 +168,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
         } else if ($event instanceof PostbackEvent) {
             error_log("Here here");
             error_log($event->getPostbackData());
-
-            if ($stateCode == '1') {
-                
-            } else if ($stateCode == '2') {
-
-            }
         }
-
-        continue;
     }
 
     $res->write('OK');
