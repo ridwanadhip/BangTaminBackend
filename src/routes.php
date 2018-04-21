@@ -33,7 +33,6 @@ use LINE\LINEBot\Event\UnfollowEvent;
 use LINE\LINEBot\Event\UnknownEvent;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
-use function GuzzleHttp\json_decode;
 
 const SERVICE_URL = 'https://bang-tamin.herokuapp.com';
 
