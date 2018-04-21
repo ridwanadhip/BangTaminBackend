@@ -157,25 +157,55 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             'state' => '1',
                         ],
                     ]);
-
-                    // TODO: handle error
+                } else if ($stateCode == '1') {
                     $response = $bot->replyMessage(
-                        $event->getReplyToken(),
+                        $event->getReplyToken(), 
                         new TemplateMessageBuilder(
-                            'init registration',
-                            new ButtonTemplateBuilder(
-                                null,
-                                'Kamu harus terdaftar sebagai member atau login terlebih dahulu',
-                                null,
-                                [
-                                    new PostbackTemplateActionBuilder('Daftar', 'post=back'),
-                                    new PostbackTemplateActionBuilder('Login', 'post=back'),
-                                    new PostbackTemplateActionBuilder('Menu Utama', 'post=back'),
-                                ]
-                            )
+                            'alt test', 
+                            new CarouselTemplateBuilder([
+                                new CarouselColumnTemplateBuilder(
+                                    'Info SPBU',
+                                    null,
+                                    'https://www.example.com/test.jpg', 
+                                    [
+                                        new UriTemplateActionBuilder('link', 'https://www.example.com/test.jpg')
+                                    ]
+                                ),
+                                new CarouselColumnTemplateBuilder(
+                                    'Shop',
+                                    null,
+                                    'https://www.example.com/test.jpg', 
+                                    [
+                                        new UriTemplateActionBuilder('link', 'https://www.example.com/test.jpg')
+                                    ]
+                                ),
+                                new CarouselColumnTemplateBuilder(
+                                    'Promo',
+                                    null,
+                                    'https://www.example.com/test.jpg', 
+                                    [
+                                        new UriTemplateActionBuilder('link', 'https://www.example.com/test.jpg')
+                                    ]
+                                ),
+                                new CarouselColumnTemplateBuilder(
+                                    'My Account',
+                                    null,
+                                    'https://www.example.com/test.jpg', 
+                                    [
+                                        new UriTemplateActionBuilder('link', 'https://www.example.com/test.jpg')
+                                    ]
+                                ),
+                                new CarouselColumnTemplateBuilder(
+                                    'Costumer Account',
+                                    null,
+                                    'https://www.example.com/test.jpg', 
+                                    [
+                                        new UriTemplateActionBuilder('link', 'https://www.example.com/test.jpg')
+                                    ]
+                                ),
+                            ])
                         )
                     );
-                    continue;
                 }
             }
         }
