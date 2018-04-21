@@ -5,6 +5,8 @@ use Slim\Http\Response;
 use LINE\LINEBot;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
+use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use LINE\LINEBot\Constant\HTTPHeader;
 use LINE\LINEBot\Event\BeaconDetectionEvent;
 use LINE\LINEBot\Event\FollowEvent;
@@ -23,6 +25,8 @@ use LINE\LINEBot\Event\UnfollowEvent;
 use LINE\LINEBot\Event\UnknownEvent;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
+use function GuzzleHttp\json_decode;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuilder;
 
 const SERVICE_URL = 'https://bang-tamin.herokuapp.com';
 
@@ -45,19 +49,38 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     } catch (InvalidSignatureException $e) {
         return $res->withStatus(400, 'Invalid signature');
     } catch (InvalidEventRequestException $e) {
-        return $res->withStatus(400, "Invalid event request");
+        return $res->withStatus(400, 'Invalid event request');
     }
 
     foreach ($events as $event) {
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
                 $client = new GuzzleHttp\Client();
-                $result = $client->request('GET', SERVICE_URL."/products", [
+                $result = $client->request('GET', SERVICE_URL.'/products', [
                     'auth' => ['user', 'pass']
                 ]);
 
-                $replyText = $result->getBody()->getContents();
-                $response = $bot->replyText($event->getReplyToken(), $replyText);
+                $decodedResults = json_decode($result->getBody()->getContents());
+                $products = [];
+
+                foreach ($decodedResults as $item) {
+                    array_push(
+                        $products, 
+                        new ImageCarouselColumnTemplateBuilder(
+                            $item['image'], 
+                            new UriTemplateActionBuilder("test", t)
+                        )
+                    );
+                }
+
+                // $response = $bot->replyText($event->getReplyToken(), $replyText);
+                $response = $bot->replyMessage(
+                    $event->getReplyToken(), 
+                    new TemplateMessageBuilder(
+                        'test', 
+                        new ImageCarouselTemplateBuilder($products)
+                    )
+                );
             }
         }
         continue;
