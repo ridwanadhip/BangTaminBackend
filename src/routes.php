@@ -95,7 +95,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
-                            'state' => '1',
+                            'state' => '2',
                         ],
                     ]);
 
