@@ -74,14 +74,14 @@ $app->post('/', function (Request $req, Response $res, array $args) {
         $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
         $state = json_decode($stateJson->getBody()->getContents(), true);
 
-        $stateCode = '0';
+        $stateCode = 'initial';
         if (count($state) > 0) {
             $stateCode = $state[0]['state'];
         } else {
             $createJson = $client->request('POST', SERVICE_URL.'/bot-states', [
                 GuzzleHttp\RequestOptions::JSON => [
                     'userId' => $userId,
-                    'state' => '0',
+                    'state' => 'initial',
                 ],
             ]);
 
@@ -91,11 +91,26 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
         if ($event instanceof MessageEvent) {
             if ($event instanceof TextMessage) {
-                if ($stateCode == '0') {
+                if ($stateCode == 'initial') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
-                            'state' => '2',
+                            'state' => 'mainMenu',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Halo! Perkenalkan saya Bang Tamin. Saya akan membantu kamu
+                        mendapatkan keuntungan dari produk Pertamina. Silakan pilih
+                        menu di bawah ini untuk melanjutkan.'))
+                        ->add(newHomeCarousel());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($stateCode == 'secondTime') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'mainMenu',
                         ],
                     ]);
 
@@ -104,36 +119,37 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ->add(new TextMessageBuilder('Apa yang bisa abang bantu?'))
                         ->add(newHomeCarousel());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
-                } else if ($stateCode == '1') {
+                } else if ($stateCode == 'askSpbuLocation') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
-                            'state' => '2',
+                            'state' => 'exitToMainMenu',
                         ],
                     ]);
-
-                    $multi = new MultiMessageBuilder();
-                    $multi
-                        ->add(new TextMessageBuilder('Apa yang bisa abang bantu?'))
-                        ->add(newHomeCarousel());
-                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
             }
         } else if ($event instanceof PostbackEvent) {
-            if ($stateCode == '2') {
+            if ($stateCode == 'mainMenu') {
                 $value = $event->getPostbackData();
 
-                if ($value == '1') {
-                    $replyText = "menu 1";
-                    $response = $bot->replyText($event->getReplyToken(), $replyText);
-                } else if ($value == '2') {
-                    $replyText = "menu 2";
-                    $response = $bot->replyText($event->getReplyToken(), $replyText);
-                } else if ($value == '3') {
+                if ($value == 'spbuMenu') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
-                            'state' => '8',
+                            'state' => 'askSpbuLocation',
+                        ],
+                    ]);
+
+                    $replyText = "Dimana lokasi SPBU yang ingin kamu ketahui?";
+                    $response = $bot->replyText($event->getReplyToken(), $replyText);
+                } else if ($value == 'shopMenu') {
+                    $replyText = "menu 2";
+                    $response = $bot->replyText($event->getReplyToken(), $replyText);
+                } else if ($value == 'promoMenu') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'exitToMainMenu',
                         ],
                     ]);
 
@@ -142,9 +158,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     $promotions = [];
                     foreach ($decodedResults as $item) {
-                        error_log($item['title']);
-                        error_log($item['desc']);
-                        error_log($item['image']);
                         array_push(
                             $promotions, 
                             new CarouselColumnTemplateBuilder(
@@ -158,17 +171,15 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         );
                     }
 
-                    $response = $bot->replyMessage(
-                        $event->getReplyToken(), 
-                        new TemplateMessageBuilder(
-                            'carousel promo', 
-                            new CarouselTemplateBuilder($promotions)
-                        )
-                    );
-                } else if ($value == '4') {
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Okee, Bang Tamin punya promo nih buat kamu!'))
+                        ->add(newPromoCarousel());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($value == 'accountMenu') {
                     $replyText = "menu 4";
                     $response = $bot->replyText($event->getReplyToken(), $replyText);
-                } else if ($value == '5') {
+                } else if ($value == 'csMenu') {
                     $replyText = "menu 5";
                     $response = $bot->replyText($event->getReplyToken(), $replyText);
                 }
@@ -189,7 +200,7 @@ function newHomeCarousel() {
                 'Info SPBU',
                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316653/station.png', 
                 [
-                    new PostbackTemplateActionBuilder('Detail', '1'),
+                    new PostbackTemplateActionBuilder('Detail', 'spbuMenu'),
                 ]
             ),
             new CarouselColumnTemplateBuilder(
@@ -197,7 +208,7 @@ function newHomeCarousel() {
                 'Shop',
                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316643/shop.png', 
                 [
-                    new PostbackTemplateActionBuilder('Detail', '2'),
+                    new PostbackTemplateActionBuilder('Detail', 'shopMenu'),
                 ]
             ),
             new CarouselColumnTemplateBuilder(
@@ -205,7 +216,7 @@ function newHomeCarousel() {
                 'Promo',
                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316632/promo.png', 
                 [
-                    new PostbackTemplateActionBuilder('Detail', '3'),
+                    new PostbackTemplateActionBuilder('Detail', 'promoMenu'),
                 ]
             ),
             new CarouselColumnTemplateBuilder(
@@ -213,7 +224,7 @@ function newHomeCarousel() {
                 'My Account',
                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316569/account.png', 
                 [
-                    new PostbackTemplateActionBuilder('Detail', '4'),
+                    new PostbackTemplateActionBuilder('Detail', 'accountMenu'),
                 ]
             ),
             new CarouselColumnTemplateBuilder(
@@ -221,9 +232,41 @@ function newHomeCarousel() {
                 'Customer Service',
                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316585/cust_service.png', 
                 [
-                    new PostbackTemplateActionBuilder('Detail', '5'),
+                    new PostbackTemplateActionBuilder('Detail', 'csMenu'),
                 ]
             ),
+        ])
+    );
+}
+
+function newPromoCarousel() {
+    return new TemplateMessageBuilder(
+        'promo test', 
+        new CarouselTemplateBuilder([
+            new CarouselColumnTemplateBuilder(
+                null,
+                'Promo Kartini Bright Gas',
+                'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293288/promo_kartini_bright_gas.jpg', 
+                [
+                    new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
+                ]
+            ),
+            new CarouselColumnTemplateBuilder(
+                null,
+                'Promo Pertamina Turbo',
+                'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293400/pertamax_turbo_15082017.jpg', 
+                [
+                    new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
+                ]
+            ),
+            new CarouselColumnTemplateBuilder(
+                null,
+                'Promo Pertamina Retail',
+                'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293417/promo_pertamina_retail.png', 
+                [
+                    new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
+                ]
+            )
         ])
     );
 }
