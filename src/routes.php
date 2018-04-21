@@ -159,11 +159,10 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     ]);
 
                     // TODO: handle error
-                    // Example of button
                     $response = $bot->replyMessage(
                         $event->getReplyToken(),
                         new TemplateMessageBuilder(
-                            'alt test',
+                            'init registration',
                             new ButtonTemplateBuilder(
                                 null,
                                 'Kamu harus terdaftar sebagai member atau login terlebih dahulu',
