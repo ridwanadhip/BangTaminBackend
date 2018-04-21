@@ -124,6 +124,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
         } else if ($event instanceof PostbackEvent) {
             if ($stateCode == '2') {
                 $value = $event->getPostbackData();
+                error_log($value);
 
                 if ($value == '1') {
 
