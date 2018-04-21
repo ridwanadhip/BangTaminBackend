@@ -169,8 +169,8 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
-                    // $promotionsJson = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
-                    // $decodedResults = json_decode($promotionsJson->getBody()->getContents(), true);
+                    $promotionsJson = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
+                    $decodedResults = json_decode($promotionsJson->getBody()->getContents(), true);
 
                     $promotions = [];
                     foreach ($decodedResults as $item) {
