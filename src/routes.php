@@ -164,70 +164,53 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     }
 
                     $response = $bot->replyMessage(
-                        $event->getReplyToken(),
+                        $event->getReplyToken(), 
                         new TemplateMessageBuilder(
-                            'alt test',
-                            new ButtonTemplateBuilder(
-                                null,
-                                'button button',
-                                null,
-                                [
-                                    new PostbackTemplateActionBuilder('postback label', 'post=back'),
-                                    new MessageTemplateActionBuilder('message label', 'test message'),
-                                    new UriTemplateActionBuilder('uri label', 'https://example.com'),
-                                ]
-                            )
+                            'alt test', 
+                            new CarouselTemplateBuilder([
+                                new CarouselColumnTemplateBuilder(
+                                    'Info SPBU',
+                                    null,
+                                    'https://www.example.com/test.jpg', 
+                                    [
+                                        new UriTemplateActionBuilder('link', 'https://www.example.com')
+                                    ]
+                                ),
+                                new CarouselColumnTemplateBuilder(
+                                    'Shop',
+                                    null,
+                                    'https://www.example.com/test.jpg', 
+                                    [
+                                        new UriTemplateActionBuilder('link', 'https://www.example.com')
+                                    ]
+                                ),
+                                new CarouselColumnTemplateBuilder(
+                                    'Promo',
+                                    null,
+                                    'https://www.example.com/test.jpg', 
+                                    [
+                                        new UriTemplateActionBuilder('link', 'https://www.example.com')
+                                    ]
+                                ),
+                                new CarouselColumnTemplateBuilder(
+                                    'My Account',
+                                    null,
+                                    'https://www.example.com/test.jpg', 
+                                    [
+                                        new UriTemplateActionBuilder('link', 'https://www.example.com')
+                                    ]
+                                ),
+                                new CarouselColumnTemplateBuilder(
+                                    'Costumer Account',
+                                    null,
+                                    'https://www.example.com/test.jpg', 
+                                    [
+                                        new UriTemplateActionBuilder('link', 'https://www.example.com')
+                                    ]
+                                ),
+                            ])
                         )
                     );
-
-                    // $response = $bot->replyMessage(
-                    //     $event->getReplyToken(), 
-                    //     new TemplateMessageBuilder(
-                    //         'alt test', 
-                    //         new CarouselTemplateBuilder([
-                    //             new CarouselColumnTemplateBuilder(
-                    //                 'Info SPBU',
-                    //                 null,
-                    //                 'https://www.example.com/test.jpg', 
-                    //                 [
-                    //                     new UriTemplateActionBuilder('link', 'https://www.example.com/test.jpg')
-                    //                 ]
-                    //             ),
-                    //             new CarouselColumnTemplateBuilder(
-                    //                 'Shop',
-                    //                 null,
-                    //                 'https://www.example.com/test.jpg', 
-                    //                 [
-                    //                     new UriTemplateActionBuilder('link', 'https://www.example.com/test.jpg')
-                    //                 ]
-                    //             ),
-                    //             new CarouselColumnTemplateBuilder(
-                    //                 'Promo',
-                    //                 null,
-                    //                 'https://www.example.com/test.jpg', 
-                    //                 [
-                    //                     new UriTemplateActionBuilder('link', 'https://www.example.com/test.jpg')
-                    //                 ]
-                    //             ),
-                    //             new CarouselColumnTemplateBuilder(
-                    //                 'My Account',
-                    //                 null,
-                    //                 'https://www.example.com/test.jpg', 
-                    //                 [
-                    //                     new UriTemplateActionBuilder('link', 'https://www.example.com/test.jpg')
-                    //                 ]
-                    //             ),
-                    //             new CarouselColumnTemplateBuilder(
-                    //                 'Costumer Account',
-                    //                 null,
-                    //                 'https://www.example.com/test.jpg', 
-                    //                 [
-                    //                     new UriTemplateActionBuilder('link', 'https://www.example.com/test.jpg')
-                    //                 ]
-                    //             ),
-                    //         ])
-                    //     )
-                    // );
 
                     continue;
                 }
