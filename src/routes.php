@@ -31,7 +31,17 @@ use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselColumnTemplateBuild
 const SERVICE_URL = 'https://bang-tamin.herokuapp.com';
 
 $app->get('/', function (Request $request, Response $response, array $args) {
-    $this->logger->info("Slim-Skeleton '/' route");
+    $client = new GuzzleHttp\Client();
+
+    // $result = $client->request('GET', SERVICE_URL.'/products', [
+    //     'auth' => ['user', 'pass']
+    // ]);
+    // $decodedResults = json_decode($result->getBody()->getContents(), true);
+
+    // foreach ($decodedResults as $item) {
+    //     $this->logger->info($item['image']);
+    // }
+    
     return $this->renderer->render($response, 'index.phtml', $args);
 });
 
@@ -60,7 +70,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     'auth' => ['user', 'pass']
                 ]);
 
-                $decodedResults = json_decode($result->getBody()->getContents());
+                $decodedResults = json_decode($result->getBody()->getContents(), true);
                 $products = [];
 
                 foreach ($decodedResults as $item) {
@@ -71,8 +81,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             new UriTemplateActionBuilder("test", $item['image'])
                         )
                     );
-
-                    error_log($item['image']);
                 }
 
                 // $response = $bot->replyText($event->getReplyToken(), $replyText);
