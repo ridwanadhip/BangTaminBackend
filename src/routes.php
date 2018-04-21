@@ -17,13 +17,13 @@ function getBot(): LINEBot {
     return $app->bot;
 }
 
-// $app->get('/', function (Request $request, Response $response, array $args) {
-//     // Sample log message
-//     $this->logger->info("Slim-Skeleton '/' route");
+$app->get('/', function (Request $request, Response $response, array $args) {
+    // Sample log message
+    $this->logger->info("Slim-Skeleton '/' route");
 
-//     // Render index view
-//     return $this->renderer->render($response, 'index.phtml', $args);
-// });
+    // Render index view
+    return $this->renderer->render($response, 'index.phtml', $args);
+});
 
 $app->post('/callback', function (Request $req, Response $res, array $args) {
     $bot = getBot();
