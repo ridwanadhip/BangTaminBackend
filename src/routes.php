@@ -139,7 +139,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
-                    $result = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
+                    $result = $client->request('GET', SERVICE_URL.'/promotions', []);
                     $decodedResults = json_decode($result->getBody()->getContents(), true);
 
                     $replyText = $result->getBody()->getContents();
