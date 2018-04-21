@@ -79,14 +79,16 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $products = [];
 
                 foreach ($decodedResults as $item) {
+                    $httpsImage = str_replace('http://', 'https//', $item['image']);
+
                     array_push(
                         $products, 
                         new CarouselColumnTemplateBuilder(
                             $item['name'],
                             $item['desc'],
-                            'https://example.com/thumbnail.jpg', 
+                            $httpsImage, 
                             [
-                                new UriTemplateActionBuilder("link", 'https://example.com/thumbnail.jpg')
+                                new UriTemplateActionBuilder("link", $httpsImage)
                             ]
                         )
                     );
