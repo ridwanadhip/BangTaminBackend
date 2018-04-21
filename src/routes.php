@@ -5,7 +5,11 @@ use Slim\Http\Response;
 use LINE\LINEBot;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\CarouselTemplateBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateBuilder\ImageCarouselTemplateBuilder;
+use LINE\LINEBot\MessageBuilder\TemplateBuilder\ButtonTemplateBuilder;
+use LINE\LINEBot\TemplateActionBuilder\MessageTemplateActionBuilder;
+use LINE\LINEBot\TemplateActionBuilder\PostbackTemplateActionBuilder;
 use LINE\LINEBot\TemplateActionBuilder\UriTemplateActionBuilder;
+use LINE\LINEBot\TemplateActionBuilder\DatetimePickerTemplateActionBuilder;
 use LINE\LINEBot\MessageBuilder\TemplateMessageBuilder;
 use LINE\LINEBot\Constant\HTTPHeader;
 use LINE\LINEBot\Event\BeaconDetectionEvent;
@@ -94,7 +98,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                 $response = $bot->replyMessage(
                     $event->getReplyToken(),
-                    new LINEBot\MessageBuilder\TemplateMessageBuilder(
+                    new TemplateMessageBuilder(
                         'alt test',
                         new ButtonTemplateBuilder(
                             'button title',
