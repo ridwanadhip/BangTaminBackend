@@ -73,23 +73,39 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $decodedResults = json_decode($result->getBody()->getContents(), true);
                 $products = [];
 
-                foreach ($decodedResults as $item) {
-                    error_log($item['image']);
-                    array_push(
-                        $products, 
-                        new ImageCarouselColumnTemplateBuilder(
-                            $item['image'], 
-                            new UriTemplateActionBuilder("test", $item['image'])
-                        )
-                    );
-                }
+                // foreach ($decodedResults as $item) {
+                //     array_push(
+                //         $products, 
+                //         new ImageCarouselColumnTemplateBuilder(
+                //             $item['image'], 
+                //             new UriTemplateActionBuilder("test", $item['image'])
+                //         )
+                //     );
+                // }
 
-                // $response = $bot->replyText($event->getReplyToken(), $replyText);
+                // // $response = $bot->replyText($event->getReplyToken(), $replyText);
+                // $response = $bot->replyMessage(
+                //     $event->getReplyToken(), 
+                //     new TemplateMessageBuilder(
+                //         'test', 
+                //         new ImageCarouselTemplateBuilder($products)
+                //     )
+                // );
+
                 $response = $bot->replyMessage(
-                    $event->getReplyToken(), 
-                    new TemplateMessageBuilder(
-                        'test', 
-                        new ImageCarouselTemplateBuilder($products)
+                    $event->getReplyToken(),
+                    new LINEBot\MessageBuilder\TemplateMessageBuilder(
+                        'alt test',
+                        new ButtonTemplateBuilder(
+                            'button title',
+                            'button button',
+                            'https://example.com/thumbnail.jpg',
+                            [
+                                new PostbackTemplateActionBuilder('postback label', 'post=back'),
+                                new MessageTemplateActionBuilder('message label', 'test message'),
+                                new UriTemplateActionBuilder('uri label', 'https://example.com'),
+                            ]
+                        )
                     )
                 );
             }
