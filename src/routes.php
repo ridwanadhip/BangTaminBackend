@@ -154,7 +154,8 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     ]);
 
                     // TODO: handle error
-                    $reply  = 'Selamat datang\n';
+                    $reply = "Selamat datang\n";
+                    $reply .= "Pilih salah satu menu berikut:\n";
                     // $reply .= 'Pilih salah satu menu berikut:\n';
                     // $reply .= '1. ya\n';
                     // $reply .= '2. tidak\n';
