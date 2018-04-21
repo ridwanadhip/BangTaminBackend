@@ -99,6 +99,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
+                    $response = $bot->replyText($event->getReplyToken(), 'Apa yang bisa abang bantu?');
                     $response = $bot->replyMessage(
                         $event->getReplyToken(), 
                         newHomeCarousel()
@@ -111,6 +112,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
+                    $response = $bot->replyText($event->getReplyToken(), 'Apa yang bisa abang bantu?');
                     $response = $bot->replyMessage(
                         $event->getReplyToken(), 
                         newHomeCarousel()
@@ -118,7 +120,11 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 }
             }
         } else if ($event instanceof PostbackEvent) {
-            $response = $bot->replyText($event->getReplyToken(), $event->getPostbackData());
+            // $response = $bot->replyText($event->getReplyToken(), $event->getPostbackData());
+
+            if ($stateCode == '2') {
+                $value = $event->getPostbackData();
+            }
         }
     }
 
@@ -135,7 +141,7 @@ function newHomeCarousel() {
                 'Info SPBU',
                 'https://www.example.com/test.jpg', 
                 [
-                    new PostbackTemplateActionBuilder('Detail', 'post=1'),
+                    new PostbackTemplateActionBuilder('Detail', '1'),
                 ]
             ),
             new CarouselColumnTemplateBuilder(
@@ -143,7 +149,7 @@ function newHomeCarousel() {
                 'Shop',
                 'https://www.example.com/test.jpg', 
                 [
-                    new PostbackTemplateActionBuilder('Detail', 'post=2'),
+                    new PostbackTemplateActionBuilder('Detail', '2'),
                 ]
             ),
             new CarouselColumnTemplateBuilder(
@@ -151,7 +157,7 @@ function newHomeCarousel() {
                 'Promo',
                 'https://www.example.com/test.jpg', 
                 [
-                    new PostbackTemplateActionBuilder('Detail', 'post=3'),
+                    new PostbackTemplateActionBuilder('Detail', '3'),
                 ]
             ),
             new CarouselColumnTemplateBuilder(
@@ -159,7 +165,7 @@ function newHomeCarousel() {
                 'My Account',
                 'https://www.example.com/test.jpg', 
                 [
-                    new PostbackTemplateActionBuilder('Detail', 'post=4'),
+                    new PostbackTemplateActionBuilder('Detail', '4'),
                 ]
             ),
             new CarouselColumnTemplateBuilder(
@@ -167,7 +173,7 @@ function newHomeCarousel() {
                 'Costumer Account',
                 'https://www.example.com/test.jpg', 
                 [
-                    new PostbackTemplateActionBuilder('Detail', 'post=5'),
+                    new PostbackTemplateActionBuilder('Detail', '5'),
                 ]
             ),
         ])
