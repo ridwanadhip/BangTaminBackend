@@ -172,27 +172,33 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     // $promotionsJson = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
                     // $decodedResults = json_decode($promotionsJson->getBody()->getContents(), true);
 
-                    // $promotions = [];
-                    // foreach ($decodedResults as $item) {
-                    //     array_push(
-                    //         $promotions, 
-                    //         new CarouselColumnTemplateBuilder(
-                    //             $item['title'],
-                    //             $item['desc'],
-                    //             $item['image'], 
-                    //             [
-                    //                 new PostbackTemplateActionBuilder('Detail', $item['id']),
-                    //             ]
-                    //         )
-                    //     );
-                    // }
-
+                    $promotions = [];
+                    foreach ($decodedResults as $item) {
+                        array_push(
+                            $promotions, 
+                            new CarouselColumnTemplateBuilder(
+                                substr($item['title'], 0, 40),
+                                substr($item['desc'], 0, 60),
+                                $item['image'], 
+                                [
+                                    new PostbackTemplateActionBuilder('Detail', $item['id']),
+                                ]
+                            )
+                        );
+                    }
                     $multi = new MultiMessageBuilder();
                     $multi
                         ->add(new TextMessageBuilder('Okee, Bang Tamin punya promo nih buat kamu!'))
-                        ->add(newPromoCarousel())
+                        ->add(new TemplateMessageBuilder('promo test', new CarouselTemplateBuilder($promotions)))
                         ->add(newDecisionButtons());;
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
+
+                    // $multi = new MultiMessageBuilder();
+                    // $multi
+                    //     ->add(new TextMessageBuilder('Okee, Bang Tamin punya promo nih buat kamu!'))
+                    //     ->add(newPromoCarousel())
+                    //     ->add(newDecisionButtons());;
+                    // $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($value == 'accountMenu') {
                     $replyText = "menu 4";
                     $response = $bot->replyText($event->getReplyToken(), $replyText);
