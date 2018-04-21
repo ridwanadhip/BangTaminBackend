@@ -79,7 +79,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $products = [];
 
                 foreach ($decodedResults as $item) {
-                    $httpsImage = str_replace('http://', 'https//', $item['image']);
+                    $httpsImage = str_replace('http://', 'https://', $item['image']);
 
                     array_push(
                         $products, 
