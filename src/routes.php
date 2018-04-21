@@ -219,7 +219,7 @@ function newHomeCarousel() {
             ),
             new CarouselColumnTemplateBuilder(
                 null,
-                'Costumer Account',
+                'Customer Service',
                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316585/cust_service.png', 
                 [
                     new PostbackTemplateActionBuilder('Detail', '5'),
