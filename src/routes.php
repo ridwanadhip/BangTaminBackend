@@ -139,11 +139,13 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
-                    $result = $client->request('GET', SERVICE_URL.'/promotions', []);
-                    $decodedResults = json_decode($result->getBody()->getContents(), true);
-
-                    $replyText = $result->getBody()->getContents();
+                    $replyText = "menu 3";
                     $response = $bot->replyText($event->getReplyToken(), $replyText);
+
+                    // $result = $client->request('GET', SERVICE_URL.'/promotions', ['auth' => ['user', 'pass']]);
+                    // $decodedResults = json_decode($result->getBody()->getContents(), true);
+                    // $replyText = $result->getBody()->getContents();
+                    // $response = $bot->replyText($event->getReplyToken(), $replyText);
 
                     // $products = [];
                     // foreach ($decodedResults as $item) {
