@@ -39,16 +39,6 @@ const SERVICE_URL = 'https://bang-tamin.herokuapp.com';
 
 $app->get('/', function (Request $request, Response $response, array $args) {
     $client = new GuzzleHttp\Client();
-
-    // $result = $client->request('GET', SERVICE_URL.'/products', [
-    //     'auth' => ['user', 'pass']
-    // ]);
-    // $decodedResults = json_decode($result->getBody()->getContents(), true);
-
-    // foreach ($decodedResults as $item) {
-    //     $this->logger->info($item['image']);
-    // }
-    
     return $this->renderer->render($response, 'index.phtml', $args);
 });
 
@@ -328,6 +318,14 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
+                    $createJson = $client->request('POST', SERVICE_URL.'/bot-state-data', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'userId' => $userId,
+                            'state' => 'loginSession',
+                            'value' => 'Yes',
+                        ],
+                    ]);
+
                     $multi = new MultiMessageBuilder();
                     $multi
                         ->add(new TextMessageBuilder('Okee selamat kamu sudah berhasil menjadi member!'))
@@ -396,17 +394,34 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ->add(newDecisionButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($value == 'accountMenu') {
-                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                        GuzzleHttp\RequestOptions::JSON => [
-                            'id' => $state[0]['id'],
-                            'state' => 'promptAccountMenu',
-                        ],
-                    ]);
+                    $loginSession = $client->request('GET', SERVICE_URL.'/bot-state-data?state=loginSession&userId='.$userId, ['auth' => ['user', 'pass']]);
+                    $decodedResults = json_decode($loginSession->getBody()->getContents(), true);
 
-                    $multi = new MultiMessageBuilder();
-                    $multi
-                        ->add(newAccountButtons());
-                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                    if (count($decodedResults) > 0) {
+                        $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                            GuzzleHttp\RequestOptions::JSON => [
+                                'id' => $state[0]['id'],
+                                'state' => 'promptLoggedAccountMenu',
+                            ],
+                        ]);
+    
+                        $multi = new MultiMessageBuilder();
+                        $multi
+                            ->add(newLoggedAccountButtons());
+                        $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                    } else {
+                        $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                            GuzzleHttp\RequestOptions::JSON => [
+                                'id' => $state[0]['id'],
+                                'state' => 'promptAccountMenu',
+                            ],
+                        ]);
+    
+                        $multi = new MultiMessageBuilder();
+                        $multi
+                            ->add(newAccountButtons());
+                        $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                    }
                 } else if ($value == 'serviceMenu') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
@@ -697,6 +712,23 @@ function newAccountButtons() {
     );
 }
 
+function newLoggedAccountButtons() {
+    return new TemplateMessageBuilder(
+        'select account menu',
+        new ButtonTemplateBuilder(
+            null,
+            'Apa yang ingin kamu lihat?',
+            null,
+            [
+                new PostbackTemplateActionBuilder('Info Poin', 'accountPoint'),
+                new PostbackTemplateActionBuilder('Voucher', 'accountVoucher'),
+                new PostbackTemplateActionBuilder('Kartu Saya', 'accountMyCard'),
+                new PostbackTemplateActionBuilder('Menu Utama', 'accountMainMenu'),
+            ]
+        )
+    );
+}
+
 function newServiceButtons() {
     return new TemplateMessageBuilder(
         'select service',
@@ -778,35 +810,3 @@ function newHomeCarousel() {
         ])
     );
 }
-
-// function newPromoCarousel() {
-//     return new TemplateMessageBuilder(
-//         'select promo', 
-//         new CarouselTemplateBuilder([
-//             new CarouselColumnTemplateBuilder(
-//                 null,
-//                 'Promo Kartini Bright Gas',
-//                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293288/promo_kartini_bright_gas.jpg', 
-//                 [
-//                     new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
-//                 ]
-//             ),
-//             new CarouselColumnTemplateBuilder(
-//                 null,
-//                 'Promo Pertamina Turbo',
-//                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293400/pertamax_turbo_15082017.jpg', 
-//                 [
-//                     new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
-//                 ]
-//             ),
-//             new CarouselColumnTemplateBuilder(
-//                 null,
-//                 'Promo Pertamina Retail',
-//                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524293417/promo_pertamina_retail.png', 
-//                 [
-//                     new PostbackTemplateActionBuilder('Detail', 'promoDetail'),
-//                 ]
-//             )
-//         ])
-//     );
-// }
