@@ -156,7 +156,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             $stations, 
                             new CarouselColumnTemplateBuilder(
                                 substr($item['name'], 0, 40),
-                                substr($item['location'], 0, 120),
+                                substr($item['location'], 0, 60),
                                 null, 
                                 [
                                     
