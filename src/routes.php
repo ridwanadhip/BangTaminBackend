@@ -148,9 +148,33 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
+                    $promotionsJson = $client->request('GET', SERVICE_URL.'/stations', ['auth' => ['user', 'pass']]);
+                    $decodedResults = json_decode($promotionsJson->getBody()->getContents(), true);
+                    $stations = [];
+                    foreach ($decodedResults as $item) {
+                        array_push(
+                            $stations, 
+                            new CarouselColumnTemplateBuilder(
+                                substr($item['name'], 0, 40),
+                                substr($item['location'], 0, 120),
+                                null, 
+                                [
+                                    new UriTemplateActionBuilder('Lokasi', $item['link']),
+                                ]
+                            )
+                        );
+                    }
+
+                    // $multi = new MultiMessageBuilder();
+                    // $multi
+                    //     ->add(new TextMessageBuilder('Okee, Bang Tamin punya promo nih buat kamu!'))
+                    //     ->add(new TemplateMessageBuilder('select promo', new CarouselTemplateBuilder($promotions)))
+                    //     ->add(newDecisionButtons());;
+                    // $response = $bot->replyMessage($event->getReplyToken(), $multi);
+
                     $multi = new MultiMessageBuilder();
                     $multi
-                        ->add(new TextMessageBuilder('SPBU di dekat Sarinah terletak di Jalan ABCD No. 21 samping McD'))
+                        ->add(new TemplateMessageBuilder('select promo', new CarouselTemplateBuilder($promotions)))
                         ->add(newDecisionButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($stateCode == 'askServiceDescription') {
