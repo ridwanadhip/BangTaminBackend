@@ -269,6 +269,14 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
+                    $createJson = $client->request('POST', SERVICE_URL.'/bot-state-data', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'userId' => $userId,
+                            'state' => 'loginSession',
+                            'value' => 'Yes',
+                        ],
+                    ]);
+
                     $multi = new MultiMessageBuilder();
                     $multi
                         ->add(new TextMessageBuilder('Login berhasil!'))
@@ -315,14 +323,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
                             'state' => 'promptYesNo',
-                        ],
-                    ]);
-
-                    $createJson = $client->request('POST', SERVICE_URL.'/bot-state-data', [
-                        GuzzleHttp\RequestOptions::JSON => [
-                            'userId' => $userId,
-                            'state' => 'loginSession',
-                            'value' => 'Yes',
                         ],
                     ]);
 
