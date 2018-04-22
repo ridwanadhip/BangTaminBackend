@@ -402,6 +402,36 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $multi
                     ->add(new TextMessageBuilder('Apa masalah yang kamu hadapi?'));
                 $response = $bot->replyMessage($event->getReplyToken(), $multi);
+            } else if ($stateCode == 'promptProductType') {
+                $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                    GuzzleHttp\RequestOptions::JSON => [
+                        'id' => $state[0]['id'],
+                        'state' => 'promptYesNo',
+                    ],
+                ]);
+
+                $productsJson = $client->request('GET', SERVICE_URL.'/products?category='.$value, ['auth' => ['user', 'pass']]);
+                $decodedResults = json_decode($productsJson->getBody()->getContents(), true);
+                $products = [];
+                foreach ($decodedResults as $item) {
+                    array_push(
+                        $products, 
+                        new CarouselColumnTemplateBuilder(
+                            substr($item['name'], 0, 40),
+                            substr($item['price'], 0, 60),
+                            $item['image'], 
+                            [
+                                new PostbackTemplateActionBuilder('Detail', $item['id']),
+                            ]
+                        )
+                    );
+                }
+
+                $multi = new MultiMessageBuilder();
+                $multi
+                    ->add(new TemplateMessageBuilder('select promo', new CarouselTemplateBuilder($products)))
+                    ->add(newDecisionButtons());;
+                $response = $bot->replyMessage($event->getReplyToken(), $multi);
             }
         }
     }
@@ -466,10 +496,10 @@ function newProductButtons() {
             'Produk apa yang ingin kamu beli?',
             null,
             [
-                new PostbackTemplateActionBuilder('Bright Gas', 'productGas'),
-                new PostbackTemplateActionBuilder('Food & drink', 'productFood'),
-                new PostbackTemplateActionBuilder('Oil', 'productOil'),
-                new PostbackTemplateActionBuilder('Others', 'productOther'),
+                new PostbackTemplateActionBuilder('Bright Gas', 'Gas'),
+                new PostbackTemplateActionBuilder('Food & drink', 'Food and Beverages'),
+                new PostbackTemplateActionBuilder('Oil', 'Oil'),
+                new PostbackTemplateActionBuilder('Others', 'Other'),
             ]
         )
     );
