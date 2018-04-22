@@ -54,6 +54,7 @@ $app->get('/', function (Request $request, Response $response, array $args) {
 $app->post('/', function (Request $req, Response $res, array $args) {
     $bot = $this->bot;
     $logger = $this->logger;
+    $client = new GuzzleHttp\Client();
 
     $signature = $req->getHeader(HTTPHeader::LINE_SIGNATURE);
     if (empty($signature)) {
@@ -68,9 +69,17 @@ $app->post('/', function (Request $req, Response $res, array $args) {
         return $res->withStatus(400, 'Invalid event request');
     }
 
+    function changeState($stateId, $stateCode) {
+        return $client->request('PUT', SERVICE_URL.'/bot-states', [
+            GuzzleHttp\RequestOptions::JSON => [
+                'id' => $stateId,
+                'state' => $stateCode,
+            ],
+        ]);
+    }
+
     foreach ($events as $event) {
         $userId = $event->getUserId();
-        $client = new GuzzleHttp\Client();
         $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
         $state = json_decode($stateJson->getBody()->getContents(), true);
 
@@ -94,12 +103,14 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $replyText = $event->getText();
 
                 if ($stateCode == 'initial') {
-                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                        GuzzleHttp\RequestOptions::JSON => [
-                            'id' => $state[0]['id'],
-                            'state' => 'mainMenu',
-                        ],
-                    ]);
+                    // $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                    //     GuzzleHttp\RequestOptions::JSON => [
+                    //         'id' => $state[0]['id'],
+                    //         'state' => 'mainMenu',
+                    //     ],
+                    // ]);
+
+                    $changeJson = changeState($state[0]['id'], 'mainMenu');
 
                     $multi = new MultiMessageBuilder();
                     $multi
@@ -217,6 +228,16 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             'value' => $replyText,
                         ],
                     ]);
+
+                    // $createJson = $client->request('POST', SERVICE_URL.'/cust-complaints', [
+                    //     GuzzleHttp\RequestOptions::JSON => [
+                    //         'userId' => $userId,
+                    //         'complain' => '',
+                    //         'location' => '',
+                    //         'when' => '',
+                    //         'detail' => '',
+                    //     ],
+                    // ]);
 
                     $multi = new MultiMessageBuilder();
                     $multi
