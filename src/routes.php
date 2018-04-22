@@ -169,7 +169,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     // $multi
                     //     ->add(new TextMessageBuilder('Okee, Bang Tamin punya promo nih buat kamu!'))
                     //     ->add(new TemplateMessageBuilder('select promo', new CarouselTemplateBuilder($promotions)))
-                    //     ->add(newDecisionButtons());;
+                    //     ->add(newDecisionButtons());
                     // $response = $bot->replyMessage($event->getReplyToken(), $multi);
 
                     $multi = new MultiMessageBuilder();
@@ -270,6 +270,19 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         'Kamu akan dihubungi lagi melalui email maupun nomor hp'))
                         ->add(newDecisionButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($stateCode == 'AskLoginCardNumber') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'promptYesNo',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Login berhasil!'))
+                        ->add(newDecisionButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
             }
         } else if ($event instanceof PostbackEvent) {
@@ -296,7 +309,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     $multi = new MultiMessageBuilder();
                     $multi
-                        ->add(newProductButtons());;
+                        ->add(newProductButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($value == 'promoMenu') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
@@ -327,7 +340,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $multi
                         ->add(new TextMessageBuilder('Okee, Bang Tamin punya promo nih buat kamu!'))
                         ->add(new TemplateMessageBuilder('select promo', new CarouselTemplateBuilder($promotions)))
-                        ->add(newDecisionButtons());;
+                        ->add(newDecisionButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($value == 'accountMenu') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
@@ -339,7 +352,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     $multi = new MultiMessageBuilder();
                     $multi
-                        ->add(newAccountButtons());;
+                        ->add(newAccountButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($value == 'serviceMenu') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
@@ -430,8 +443,47 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $multi = new MultiMessageBuilder();
                 $multi
                     ->add(new TemplateMessageBuilder('select promo', new CarouselTemplateBuilder($products)))
-                    ->add(newDecisionButtons());;
+                    ->add(newDecisionButtons());
                 $response = $bot->replyMessage($event->getReplyToken(), $multi);
+            } else if ($stateCode == 'promptAccountMenu') {
+                if ($value == 'accountRegister') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'AskRegisterName',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Sipp lah, abang bantu kamu daftar jadi member yak'))
+                        ->add(new TextMessageBuilder('Kalo mau membatalkan pendaftaran, ketik ‘batal’ aja yak'))
+                        ->add(new TextMessageBuilder('Sekarang, abang butuh nama lengkap kamu. Tolong '.
+                        'tuliskan nama lengkap sesuai kartu identitas?'));
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($value == 'accountLogin') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'AskLoginCardNumber',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi->add(new TextMessageBuilder('Masukkan nomor kartu anda'));
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($value == 'accountMainMenu') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'promptYesNo',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi->add(newDecisionButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                }
             }
         }
     }
