@@ -159,7 +159,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                                 substr($item['location'], 0, 60),
                                 null, 
                                 [
-                                    
+                                    new UriTemplateActionBuilder('Lokasi', $item['link']),
                                 ]
                             )
                         );
@@ -174,7 +174,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     $multi = new MultiMessageBuilder();
                     $multi
-                        ->add(new TemplateMessageBuilder('select promo', new CarouselTemplateBuilder($stations)))
+                        ->add(new TemplateMessageBuilder('select station', new CarouselTemplateBuilder($stations)))
                         ->add(newDecisionButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($stateCode == 'askServiceDescription') {
