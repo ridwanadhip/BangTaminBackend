@@ -103,8 +103,8 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     $multi = new MultiMessageBuilder();
                     $multi
-                        ->add(new TextMessageBuilder('Halo! Perkenalkan saya Bang Tamin. ' . 
-                        'Saya akan membantu kamu mendapatkan keuntungan dari produk Pertamina. ' . 
+                        ->add(new TextMessageBuilder('Haii Bang Tamin siap bantu kamu!. ' . 
+                        'Abang akan bawa kamu banyak keuntungan dari produk Pertamina. ' . 
                         'Silakan pilih menu di bawah ini untuk melanjutkan.'))
                         ->add(newHomeCarousel());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
@@ -140,6 +140,74 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $multi = new MultiMessageBuilder();
                     $multi
                         ->add(new TextMessageBuilder('SPBU di dekat Sarinah terletak di Jalan ABCD No. 21 samping McD'))
+                        ->add(newDecisionButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($stateCode == 'askServiceDescription') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'askServiceWhere',
+                        ],
+                    ]);
+
+                    $createJson = $client->request('POST', SERVICE_URL.'/bot-state-data', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'userId' => $userId,
+                            'state' => 'askServiceDescription',
+                            'value' => $replyText,
+                        ],
+                    ]);
+                } else if ($stateCode == 'askServiceWhere') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'askServiceWhen',
+                        ],
+                    ]);
+
+                    $createJson = $client->request('POST', SERVICE_URL.'/bot-state-data', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'userId' => $userId,
+                            'state' => 'askServiceWhere',
+                            'value' => $replyText,
+                        ],
+                    ]);
+                } else if ($stateCode == 'askServiceWhen') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'askServiceOther',
+                        ],
+                    ]);
+
+                    $createJson = $client->request('POST', SERVICE_URL.'/bot-state-data', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'userId' => $userId,
+                            'state' => 'askServiceWhen',
+                            'value' => $replyText,
+                        ],
+                    ]);
+                } else if ($stateCode == 'askServiceOther') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'promptYesNo',
+                        ],
+                    ]);
+
+                    $createJson = $client->request('POST', SERVICE_URL.'/bot-state-data', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'userId' => $userId,
+                            'state' => 'askServiceOther',
+                            'value' => $replyText,
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Baik, abang mohon maaf ya atas ketidaknyamanan yang kamu rasa.. :('))
+                        ->add(new TextMessageBuilder('Keluhan kamu sudah abang sampaikan ke tim abang di lapangan. '.
+                        'Kamu akan dihubungi lagi melalui email maupun nomor hp'))
                         ->add(newDecisionButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
@@ -213,7 +281,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $multi
                         ->add(newAccountButtons());;
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
-                } else if ($value == 'csMenu') {
+                } else if ($value == 'serviceMenu') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
                             'id' => $state[0]['id'],
@@ -254,6 +322,26 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ' Kalo ada yang perlu abang bantu, say ‘hai’ aja yaa :D'));
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
+            } else if ($stateCode == 'promptService') {
+                $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                    GuzzleHttp\RequestOptions::JSON => [
+                        'id' => $state[0]['id'],
+                        'state' => 'askServiceDescription',
+                    ],
+                ]);
+
+                $createJson = $client->request('POST', SERVICE_URL.'/bot-state-data', [
+                    GuzzleHttp\RequestOptions::JSON => [
+                        'userId' => $userId,
+                        'state' => 'promptService',
+                        'value' => $value,
+                    ],
+                ]);
+
+                $multi = new MultiMessageBuilder();
+                $multi
+                    ->add(new TextMessageBuilder('Apa masalah yang kamu hadapi?'));
+                $response = $bot->replyMessage($event->getReplyToken(), $multi);
             }
         }
     }
@@ -368,7 +456,7 @@ function newHomeCarousel() {
                 'Customer Service',
                 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524316585/cust_service.png', 
                 [
-                    new PostbackTemplateActionBuilder('Detail', 'csMenu'),
+                    new PostbackTemplateActionBuilder('Detail', 'serviceMenu'),
                 ]
             ),
         ])
