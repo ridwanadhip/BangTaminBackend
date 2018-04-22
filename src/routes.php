@@ -643,6 +643,32 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ->add(new TextMessageBuilder('Tolong tuliskan ulang email kamu yang aktif yak'));
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
+            } else if ($stateCode == 'promptLoggedAccountMenu') {
+                if ($value == 'accountMainMenu') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'promptYesNo',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi->add(newDecisionButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($value == 'accountMyCard') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'promptYesNo',
+                        ],
+                    ]);
+                    
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new ImageMessageBuilder('https://res.cloudinary.com/indonesia-gw/image/upload/v1524300804/cardmypertamina.jpg', 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524300804/cardmypertamina.jpg'))
+                        ->add(newDecisionButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                }
             }
         }
     }
