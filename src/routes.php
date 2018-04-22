@@ -148,8 +148,8 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
-                    $promotionsJson = $client->request('GET', SERVICE_URL.'/stations', ['auth' => ['user', 'pass']]);
-                    $decodedResults = json_decode($promotionsJson->getBody()->getContents(), true);
+                    $stationsJson = $client->request('GET', SERVICE_URL.'/stations', ['auth' => ['user', 'pass']]);
+                    $decodedResults = json_decode($stationsJson->getBody()->getContents(), true);
                     $stations = [];
                     foreach ($decodedResults as $item) {
                         array_push(
@@ -159,7 +159,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                                 substr($item['location'], 0, 120),
                                 null, 
                                 [
-                                    new UriTemplateActionBuilder('Lokasi', $item['link']),
+                                    
                                 ]
                             )
                         );
