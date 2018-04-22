@@ -244,16 +244,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ],
                     ]);
 
-                    // $createJson = $client->request('POST', SERVICE_URL.'/cust-complaints', [
-                    //     GuzzleHttp\RequestOptions::JSON => [
-                    //         'userId' => $userId,
-                    //         'complain' => '',
-                    //         'location' => '',
-                    //         'when' => '',
-                    //         'detail' => '',
-                    //     ],
-                    // ]);
-
                     $multi = new MultiMessageBuilder();
                     $multi
                         ->add(new TextMessageBuilder('Baik, abang mohon maaf ya atas ketidaknyamanan yang kamu rasa.. :('))
