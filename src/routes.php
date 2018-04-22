@@ -33,6 +33,7 @@ use LINE\LINEBot\Event\UnfollowEvent;
 use LINE\LINEBot\Event\UnknownEvent;
 use LINE\LINEBot\Exception\InvalidEventRequestException;
 use LINE\LINEBot\Exception\InvalidSignatureException;
+use LINE\LINEBot\MessageBuilder\ImageMessageBuilder;
 
 const SERVICE_URL = 'https://bang-tamin.herokuapp.com';
 
@@ -283,6 +284,58 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                         ->add(new TextMessageBuilder('Login berhasil!'))
                         ->add(newDecisionButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($stateCode == 'AskRegisterName') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'AskRegisterNameCheck',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(newRecheckButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($stateCode == 'AskRegisterBirth') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'AskRegisterBirthCheck',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(newRecheckButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($stateCode == 'AskRegisterEmail') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'AskRegisterEmailCheck',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(newRecheckButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($stateCode == 'AskRegisterPhone') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'promptYesNo',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Okee selamat kamu sudah berhasil menjadi member!'))
+                        ->add(new ImageMessageBuilder('https://res.cloudinary.com/indonesia-gw/image/upload/v1524300804/cardmypertamina.jpg', 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524300804/cardmypertamina.jpg'))
+                        ->add(new TextMessageBuilder('Simpan kartu ini yaa untuk bertransaksi langsung di '.
+                        'toko ritel maupun SPBU Pertamina :D'))
+                        ->add(newDecisionButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
             }
         } else if ($event instanceof PostbackEvent) {
@@ -484,6 +537,97 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                     $multi->add(newDecisionButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
+            } else if ($stateCode == 'AskRegisterNameCheck') {
+                if ($value == 'yes') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'AskRegisterGender',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Sepertinya kamu laki-laki sejati nih. Iya gak?'))
+                        ->add(newGenderButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($value == 'no') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'AskRegisterName',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Tolong tuliskan ulang nama lengkap sesuai kartu identitas yak'));
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                }
+            } else if ($stateCode == 'AskRegisterGender') {
+                $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                    GuzzleHttp\RequestOptions::JSON => [
+                        'id' => $state[0]['id'],
+                        'state' => 'AskRegisterBirth',
+                    ],
+                ]);
+
+                $multi = new MultiMessageBuilder();
+                $multi
+                    ->add(new TextMessageBuilder('Okee.. Sekarang, tolong tuliskan tanggal, bulan dan tahun lahir kamu'));
+                $response = $bot->replyMessage($event->getReplyToken(), $multi);
+            } else if ($stateCode == 'AskRegisterBirthCheck') {
+                if ($value == 'yes') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'AskRegisterEmail',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Siapp! Lalu, apa nama email kamu yang aktif?'));
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($value == 'no') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'AskRegisterBirth',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Tolong tuliskan ulang tanggal, bulan dan tahun lahir kamu yak'));
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                }
+            } else if ($stateCode == 'AskRegisterEmailCheck') {
+                if ($value == 'yes') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'AskRegisterPhone',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Terakhir nih.. Nomor hp kamu berapa?'));
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($value == 'no') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'AskRegisterEmail',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Tolong tuliskan ulang email kamu yang aktif yak'));
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                }
             }
         }
     }
@@ -491,6 +635,21 @@ $app->post('/', function (Request $req, Response $res, array $args) {
     $res->write('OK');
     return $res;
 });
+
+function newGenderButtons() {
+    return new TemplateMessageBuilder(
+        'gender decision',
+        new ButtonTemplateBuilder(
+            null,
+            'Sepertinya kamu laki-laki sejati nih. Iya gak?',
+            null,
+            [
+                new PostbackTemplateActionBuilder('Yoih', 'yes'),
+                new PostbackTemplateActionBuilder('Aku perempuan bang', 'no'),
+            ]
+        )
+    );
+}
 
 function newDecisionButtons() {
     return new TemplateMessageBuilder(
@@ -502,6 +661,21 @@ function newDecisionButtons() {
             [
                 new PostbackTemplateActionBuilder('Ya', 'yes'),
                 new PostbackTemplateActionBuilder('Tidak', 'no'),
+            ]
+        )
+    );
+}
+
+function newRecheckButtons() {
+    return new TemplateMessageBuilder(
+        'check decision',
+        new ButtonTemplateBuilder(
+            null,
+            'Sudah bener nih?',
+            null,
+            [
+                new PostbackTemplateActionBuilder('Sudah', 'yes'),
+                new PostbackTemplateActionBuilder('Belum', 'no'),
             ]
         )
     );
