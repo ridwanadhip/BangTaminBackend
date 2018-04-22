@@ -662,10 +662,53 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             'state' => 'promptYesNo',
                         ],
                     ]);
-                    
+
                     $multi = new MultiMessageBuilder();
                     $multi
                         ->add(new ImageMessageBuilder('https://res.cloudinary.com/indonesia-gw/image/upload/v1524300804/cardmypertamina.jpg', 'https://res.cloudinary.com/indonesia-gw/image/upload/v1524300804/cardmypertamina.jpg'))
+                        ->add(newDecisionButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($value == 'accountPoint') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'promptYesNo',
+                        ],
+                    ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Anda memiliki 1000 point yang belum terpakai'))
+                        ->add(newDecisionButtons());
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
+                } else if ($value == 'accountVoucher') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'promptYesNo',
+                        ],
+                    ]);
+
+                    $vouchersJson = $client->request('GET', SERVICE_URL.'/vouchers', ['auth' => ['user', 'pass']]);
+                    $decodedResults = json_decode($vouchersJson->getBody()->getContents(), true);
+                    $vouchers = [];
+                    foreach ($decodedResults as $item) {
+                        array_push(
+                            $vouchers, 
+                            new CarouselColumnTemplateBuilder(
+                                substr($item['name'], 0, 40),
+                                substr($item['value'], 0, 60),
+                                $item['image'], 
+                                [
+                                    new PostbackTemplateActionBuilder('Detail', $item['id']),
+                                ]
+                            )
+                        );
+                    }
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TemplateMessageBuilder('select voucher', new CarouselTemplateBuilder($vouchers)))
                         ->add(newDecisionButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 }
