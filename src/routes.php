@@ -93,6 +93,17 @@ $app->post('/', function (Request $req, Response $res, array $args) {
             if ($event instanceof TextMessage) {
                 $replyText = $event->getText();
 
+                if ($replyText == '/reset') {
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'initial',
+                        ],
+                    ]);
+
+                    continue;
+                }
+
                 if ($stateCode == 'initial') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
