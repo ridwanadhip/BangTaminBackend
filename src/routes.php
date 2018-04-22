@@ -69,15 +69,6 @@ $app->post('/', function (Request $req, Response $res, array $args) {
         return $res->withStatus(400, 'Invalid event request');
     }
 
-    function changeState($stateId, $stateCode) {
-        return $client->request('PUT', SERVICE_URL.'/bot-states', [
-            GuzzleHttp\RequestOptions::JSON => [
-                'id' => $stateId,
-                'state' => $stateCode,
-            ],
-        ]);
-    }
-
     foreach ($events as $event) {
         $userId = $event->getUserId();
         $stateJson = $client->request('GET', SERVICE_URL.'/bot-states?userId='.$userId, ['auth' => ['user', 'pass']]);
@@ -103,14 +94,12 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                 $replyText = $event->getText();
 
                 if ($stateCode == 'initial') {
-                    // $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
-                    //     GuzzleHttp\RequestOptions::JSON => [
-                    //         'id' => $state[0]['id'],
-                    //         'state' => 'mainMenu',
-                    //     ],
-                    // ]);
-
-                    $changeJson = changeState($state[0]['id'], 'mainMenu');
+                    $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
+                        GuzzleHttp\RequestOptions::JSON => [
+                            'id' => $state[0]['id'],
+                            'state' => 'mainMenu',
+                        ],
+                    ]);
 
                     $multi = new MultiMessageBuilder();
                     $multi
