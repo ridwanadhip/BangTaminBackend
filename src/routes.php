@@ -174,7 +174,7 @@ $app->post('/', function (Request $req, Response $res, array $args) {
 
                     $multi = new MultiMessageBuilder();
                     $multi
-                        ->add(new TemplateMessageBuilder('select promo', new CarouselTemplateBuilder($promotions)))
+                        ->add(new TemplateMessageBuilder('select promo', new CarouselTemplateBuilder($stations)))
                         ->add(newDecisionButtons());
                     $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($stateCode == 'askServiceDescription') {
