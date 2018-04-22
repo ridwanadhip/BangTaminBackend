@@ -157,6 +157,11 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             'value' => $replyText,
                         ],
                     ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Dimana SPBU tempat kejadian yang dimaksud?'));
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($stateCode == 'askServiceWhere') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
@@ -172,6 +177,11 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             'value' => $replyText,
                         ],
                     ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Kapan kamu mengalami kejadian tersebut?'));
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($stateCode == 'askServiceWhen') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
@@ -187,6 +197,11 @@ $app->post('/', function (Request $req, Response $res, array $args) {
                             'value' => $replyText,
                         ],
                     ]);
+
+                    $multi = new MultiMessageBuilder();
+                    $multi
+                        ->add(new TextMessageBuilder('Apakah ada detail lain yang ingin kamu ceritakan?'));
+                    $response = $bot->replyMessage($event->getReplyToken(), $multi);
                 } else if ($stateCode == 'askServiceOther') {
                     $changeJson = $client->request('PUT', SERVICE_URL.'/bot-states', [
                         GuzzleHttp\RequestOptions::JSON => [
